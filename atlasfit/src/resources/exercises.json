@@ -1,0 +1,386 @@
+[
+    {
+        "name": "Barbell Bench Press",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "barbell",
+        "difficulty": "beginner",
+        "instructions": "Lie on a flat bench with your feet firmly on the ground. Grip the barbell slightly wider than shoulder-width. Lower it to your mid-chest, keeping your elbows at a 45-degree angle. Press back up to the starting position."
+    },
+    {
+        "name": "Incline Barbell Bench Press",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on an incline bench, feet flat on the floor. Grip the bar slightly wider than shoulder-width. Lower it to your upper chest, then press back up."
+    },
+    {
+        "name": "Decline Barbell Bench Press",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on a decline bench, securing your feet. Grip the barbell wider than shoulder-width. Lower it to your lower chest, then press back up."
+    },
+    {
+        "name": "Barbell Deadlift",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "barbell",
+        "difficulty": "beginner",
+        "instructions": "Stand with feet hip-width apart, barbell over mid-foot. Grip the bar, bend at the hips, keep back straight. Lift by extending hips and knees."
+    },
+    {
+        "name": "Sumo Deadlift",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Use a wider stance, grip the bar inside your knees. Keep back straight, lift by driving through the legs and hips."
+    },
+    {
+        "name": "Romanian Deadlift",
+        "type": "strength",
+        "muscle": "hamstrings",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold the barbell at hip level, feet shoulder-width. Hinge at the hips, lower the bar while keeping back straight, return to start."
+    },
+    {
+        "name": "Conventional Squat",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "barbell",
+        "difficulty": "beginner",
+        "instructions": "Stand with feet shoulder-width apart, bar on your upper back. Lower until thighs are parallel to the floor, push back up."
+    },
+    {
+        "name": "Front Squat",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold the bar on the front of your shoulders. Lower into a squat while keeping the torso upright, then stand back up."
+    },
+    {
+        "name": "Overhead Squat",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "barbell",
+        "difficulty": "expert",
+        "instructions": "Hold the bar overhead with a wide grip. Keep your core tight as you squat down, maintaining balance, then return to standing."
+    },
+    {
+        "name": "Leg Press",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "machine",
+        "difficulty": "beginner",
+        "instructions": "Sit on the leg press machine. Place feet shoulder-width apart on the platform. Push the weight up, then lower under control."
+    },
+    {
+        "name": "Bulgarian Split Squat",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "dumbbell",
+        "difficulty": "intermediate",
+        "instructions": "Stand a few feet in front of a bench. Place one foot on the bench behind you. Lower into a lunge position, then push back up."
+    },
+    {
+        "name": "Lunges",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Stand upright, holding dumbbells. Step forward, lowering your back knee toward the ground. Push back up and repeat."
+    },
+    {
+        "name": "Calf Raise",
+        "type": "strength",
+        "muscle": "calves",
+        "equipment": "machine",
+        "difficulty": "beginner",
+        "instructions": "Stand on the calf raise machine with toes on the platform. Raise heels as high as possible, then lower back down."
+    },
+    {
+        "name": "Seated Calf Raise",
+        "type": "strength",
+        "muscle": "calves",
+        "equipment": "machine",
+        "difficulty": "beginner",
+        "instructions": "Sit on the calf raise machine with feet on the platform. Push up onto your toes, then lower back down."
+    },
+    {
+        "name": "Lat Pulldown",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "machine",
+        "difficulty": "beginner",
+        "instructions": "Sit at the lat pulldown machine, grip the bar wider than shoulder-width. Pull the bar down to your chest, then return slowly."
+    },
+    {
+        "name": "Pull-Up",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Grab a pull-up bar with an overhand grip. Pull yourself up until your chin is over the bar, then lower back down."
+    },
+    {
+        "name": "Bent-Over Barbell Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold the bar with an overhand grip, hinge forward at the hips. Pull the bar to your torso, then lower back down."
+    },
+    {
+        "name": "Dumbbell Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Place one knee on a bench, hold a dumbbell in the opposite hand. Pull the weight to your side, then lower."
+    },
+    {
+        "name": "Barbell Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "barbell",
+        "difficulty": "beginner",
+        "instructions": "Stand upright, hold a barbell with an underhand grip. Curl the bar up to your shoulders, then lower slowly."
+    },
+    {
+        "name": "Dumbbell Bicep Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a dumbbell in each hand. Curl the weights up, squeezing your biceps, then lower back down."
+    },
+    {
+        "name": "Hammer Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a dumbbell in each hand with palms facing in. Curl the weights up, then lower back down."
+    },
+    {
+        "name": "Triceps Dips",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Grip parallel bars, lower yourself until elbows are at 90 degrees, then push back up."
+    },
+    {
+        "name": "Triceps Pushdown",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Grip the cable attachment, push it down until arms are fully extended, then return slowly."
+    },
+    {
+        "name": "Overhead Triceps Extension",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a dumbbell overhead with both hands. Lower behind your head, then extend back up."
+    },
+    {
+        "name": "Close-Grip Bench Press",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on a flat bench, grip the barbell with hands closer than shoulder-width. Lower to your chest, then press back up."
+    },
+    {
+        "name": "Skull Crushers",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on a bench, hold an EZ bar with an overhand grip. Lower the bar to your forehead, then extend your arms back up."
+    },
+    {
+        "name": "Dumbbell Shoulder Press",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Sit or stand with a dumbbell in each hand at shoulder height. Press the weights overhead, then lower back to the starting position."
+    },
+    {
+        "name": "Barbell Overhead Press",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Stand with feet shoulder-width apart, hold a barbell at shoulder height. Press the bar overhead, then lower back down."
+    },
+    {
+        "name": "Arnold Press",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold dumbbells at shoulder height with palms facing you. Rotate palms outward as you press the weights overhead, then lower."
+    },
+    {
+        "name": "Lateral Raise",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a dumbbell in each hand at your sides. Raise arms out to the sides until they reach shoulder height, then lower slowly."
+    },
+    {
+        "name": "Front Raise",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a dumbbell in each hand, palms facing your thighs. Lift the weights forward to shoulder height, then lower."
+    },
+    {
+        "name": "Rear Delt Fly",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Bend at the waist, hold dumbbells with palms facing in. Raise arms out to the sides, squeezing shoulder blades together, then lower."
+    },
+    {
+        "name": "Face Pull",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Attach a rope to a cable machine at face height. Pull the rope towards your face, squeezing your shoulder blades together."
+    },
+    {
+        "name": "Cable Lateral Raise",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Stand beside a cable machine, grasp the handle with the opposite hand. Raise arm out to the side, then lower slowly."
+    },
+    {
+        "name": "Seated Dumbbell Shrug",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Sit on a bench holding dumbbells. Shrug your shoulders as high as possible, then lower back down."
+    },
+    {
+        "name": "Barbell Shrug",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "barbell",
+        "difficulty": "beginner",
+        "instructions": "Hold a barbell in front of your thighs with an overhand grip. Shrug your shoulders up, then lower back down."
+    },
+    {
+        "name": "Hanging Leg Raise",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Hang from a pull-up bar, raise legs straight in front of you to waist height, then lower back down."
+    },
+    {
+        "name": "Decline Sit-Up",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Lie on a decline bench with feet secured. Perform a sit-up by contracting your abs, then lower back down."
+    },
+    {
+        "name": "Russian Twist",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "medicine ball",
+        "difficulty": "intermediate",
+        "instructions": "Sit on the ground, hold a medicine ball. Twist your torso side to side, keeping your core engaged."
+    },
+    {
+        "name": "Plank",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie face down, rest on forearms and toes. Keep body straight and core engaged, holding the position as long as possible."
+    },
+    {
+        "name": "Side Plank",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your side, prop up on one forearm. Keep body straight and hold the position for the desired duration."
+    },
+    {
+        "name": "Hanging Knee Raise",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Hang from a pull-up bar, raise knees towards your chest, then lower back down."
+    },
+    {
+        "name": "Reverse Crunch",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your back, lift legs off the ground. Curl knees towards your chest, then lower back down."
+    },
+    {
+        "name": "Leg Raises",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie flat, keep legs straight. Lift them to 90 degrees, then lower slowly."
+    },
+    {
+        "name": "Cable Woodchopper",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "cable",
+        "difficulty": "intermediate",
+        "instructions": "Attach a handle to a cable machine at a high setting. Pull the cable diagonally across your body while twisting your torso."
+    },
+    {
+        "name": "Battle Ropes",
+        "type": "cardio",
+        "muscle": "full body",
+        "equipment": "battle ropes",
+        "difficulty": "intermediate",
+        "instructions": "Hold battle ropes in each hand. Use quick, alternating arm movements to create waves."
+    },
+    {
+        "name": "Kettlebell Swing",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "kettlebell",
+        "difficulty": "intermediate",
+        "instructions": "Stand with feet shoulder-width apart. Swing the kettlebell between your legs, then drive hips forward to propel it upward."
+    },
+    {
+        "name": "Box Jump",
+        "type": "plyometrics",
+        "muscle": "legs",
+        "equipment": "plyo box",
+        "difficulty": "intermediate",
+        "instructions": "Stand in front of a box, jump up, landing softly on top, then step down."
+    }
+]
