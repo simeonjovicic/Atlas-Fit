@@ -5,7 +5,13 @@
         "muscle": "chest",
         "equipment": "barbell",
         "difficulty": "beginner",
-        "instructions": "Lie on a flat bench with your feet firmly on the ground. Grip the barbell slightly wider than shoulder-width. Lower it to your mid-chest, keeping your elbows at a 45-degree angle. Press back up to the starting position."
+        "instructions": "Lie on a flat bench with your feet firmly on the ground. Grip the barbell slightly wider than shoulder-width. Lower it to your mid-chest, keeping your elbows at a 45-degree angle. Press back up to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Incline Barbell Bench Press",
@@ -13,7 +19,13 @@
         "muscle": "chest",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Lie on an incline bench, feet flat on the floor. Grip the bar slightly wider than shoulder-width. Lower it to your upper chest, then press back up."
+        "instructions": "Lie on an incline bench, feet flat on the floor. Grip the bar slightly wider than shoulder-width. Lower it to your upper chest, then press back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Decline Barbell Bench Press",
@@ -21,7 +33,13 @@
         "muscle": "chest",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Lie on a decline bench, securing your feet. Grip the barbell wider than shoulder-width. Lower it to your lower chest, then press back up."
+        "instructions": "Lie on a decline bench, securing your feet. Grip the barbell wider than shoulder-width. Lower it to your lower chest, then press back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Barbell Deadlift",
@@ -29,7 +47,13 @@
         "muscle": "back",
         "equipment": "barbell",
         "difficulty": "beginner",
-        "instructions": "Stand with feet hip-width apart, barbell over mid-foot. Grip the bar, bend at the hips, keep back straight. Lift by extending hips and knees."
+        "instructions": "Stand with feet hip-width apart, barbell over mid-foot. Grip the bar, bend at the hips, keep back straight. Lift by extending hips and knees.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Sumo Deadlift",
@@ -37,7 +61,13 @@
         "muscle": "back",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Use a wider stance, grip the bar inside your knees. Keep back straight, lift by driving through the legs and hips."
+        "instructions": "Use a wider stance, grip the bar inside your knees. Keep back straight, lift by driving through the legs and hips.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Romanian Deadlift",
@@ -45,7 +75,13 @@
         "muscle": "hamstrings",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Hold the barbell at hip level, feet shoulder-width. Hinge at the hips, lower the bar while keeping back straight, return to start."
+        "instructions": "Hold the barbell at hip level, feet shoulder-width. Hinge at the hips, lower the bar while keeping back straight, return to start.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Conventional Squat",
@@ -53,7 +89,13 @@
         "muscle": "legs",
         "equipment": "barbell",
         "difficulty": "beginner",
-        "instructions": "Stand with feet shoulder-width apart, bar on your upper back. Lower until thighs are parallel to the floor, push back up."
+        "instructions": "Stand with feet shoulder-width apart, bar on your upper back. Lower until thighs are parallel to the floor, push back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Front Squat",
@@ -61,7 +103,13 @@
         "muscle": "legs",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Hold the bar on the front of your shoulders. Lower into a squat while keeping the torso upright, then stand back up."
+        "instructions": "Hold the bar on the front of your shoulders. Lower into a squat while keeping the torso upright, then stand back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Overhead Squat",
@@ -69,7 +117,13 @@
         "muscle": "legs",
         "equipment": "barbell",
         "difficulty": "expert",
-        "instructions": "Hold the bar overhead with a wide grip. Keep your core tight as you squat down, maintaining balance, then return to standing."
+        "instructions": "Hold the bar overhead with a wide grip. Keep your core tight as you squat down, maintaining balance, then return to standing.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Leg Press",
@@ -77,7 +131,13 @@
         "muscle": "legs",
         "equipment": "machine",
         "difficulty": "beginner",
-        "instructions": "Sit on the leg press machine. Place feet shoulder-width apart on the platform. Push the weight up, then lower under control."
+        "instructions": "Sit on the leg press machine. Place feet shoulder-width apart on the platform. Push the weight up, then lower under control.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Bulgarian Split Squat",
@@ -85,7 +145,13 @@
         "muscle": "legs",
         "equipment": "dumbbell",
         "difficulty": "intermediate",
-        "instructions": "Stand a few feet in front of a bench. Place one foot on the bench behind you. Lower into a lunge position, then push back up."
+        "instructions": "Stand a few feet in front of a bench. Place one foot on the bench behind you. Lower into a lunge position, then push back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Lunges",
@@ -93,7 +159,13 @@
         "muscle": "legs",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Stand upright, holding dumbbells. Step forward, lowering your back knee toward the ground. Push back up and repeat."
+        "instructions": "Stand upright, holding dumbbells. Step forward, lowering your back knee toward the ground. Push back up and repeat.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Calf Raise",
@@ -101,7 +173,13 @@
         "muscle": "calves",
         "equipment": "machine",
         "difficulty": "beginner",
-        "instructions": "Stand on the calf raise machine with toes on the platform. Raise heels as high as possible, then lower back down."
+        "instructions": "Stand on the calf raise machine with toes on the platform. Raise heels as high as possible, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 12-15 reps",
+            "intermediate": "4 sets x 15-20 reps",
+            "advanced": "5 sets x 20-25 reps"
+        },
+        "saved": false
     },
     {
         "name": "Seated Calf Raise",
@@ -109,7 +187,13 @@
         "muscle": "calves",
         "equipment": "machine",
         "difficulty": "beginner",
-        "instructions": "Sit on the calf raise machine with feet on the platform. Push up onto your toes, then lower back down."
+        "instructions": "Sit on the calf raise machine with feet on the platform. Push up onto your toes, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 12-15 reps",
+            "intermediate": "4 sets x 15-20 reps",
+            "advanced": "5 sets x 20-25 reps"
+        },
+        "saved": false
     },
     {
         "name": "Lat Pulldown",
@@ -117,7 +201,13 @@
         "muscle": "back",
         "equipment": "machine",
         "difficulty": "beginner",
-        "instructions": "Sit at the lat pulldown machine, grip the bar wider than shoulder-width. Pull the bar down to your chest, then return slowly."
+        "instructions": "Sit at the lat pulldown machine, grip the bar wider than shoulder-width. Pull the bar down to your chest, then return slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Pull-Up",
@@ -125,7 +215,13 @@
         "muscle": "back",
         "equipment": "body weight",
         "difficulty": "intermediate",
-        "instructions": "Grab a pull-up bar with an overhand grip. Pull yourself up until your chin is over the bar, then lower back down."
+        "instructions": "Grab a pull-up bar with an overhand grip. Pull yourself up until your chin is over the bar, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Bent-Over Barbell Row",
@@ -133,7 +229,13 @@
         "muscle": "back",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Hold the bar with an overhand grip, hinge forward at the hips. Pull the bar to your torso, then lower back down."
+        "instructions": "Hold the bar with an overhand grip, hinge forward at the hips. Pull the bar to your torso, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Dumbbell Row",
@@ -141,7 +243,13 @@
         "muscle": "back",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Place one knee on a bench, hold a dumbbell in the opposite hand. Pull the weight to your side, then lower."
+        "instructions": "Place one knee on a bench, hold a dumbbell in the opposite hand. Pull the weight to your side, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Barbell Curl",
@@ -149,7 +257,13 @@
         "muscle": "biceps",
         "equipment": "barbell",
         "difficulty": "beginner",
-        "instructions": "Stand upright, hold a barbell with an underhand grip. Curl the bar up to your shoulders, then lower slowly."
+        "instructions": "Stand upright, hold a barbell with an underhand grip. Curl the bar up to your shoulders, then lower slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Dumbbell Bicep Curl",
@@ -157,7 +271,13 @@
         "muscle": "biceps",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Hold a dumbbell in each hand. Curl the weights up, squeezing your biceps, then lower back down."
+        "instructions": "Hold a dumbbell in each hand. Curl the weights up, squeezing your biceps, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Hammer Curl",
@@ -165,7 +285,13 @@
         "muscle": "biceps",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Hold a dumbbell in each hand with palms facing in. Curl the weights up, then lower back down."
+        "instructions": "Hold a dumbbell in each hand with palms facing in. Curl the weights up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Triceps Dips",
@@ -173,7 +299,13 @@
         "muscle": "triceps",
         "equipment": "body weight",
         "difficulty": "intermediate",
-        "instructions": "Grip parallel bars, lower yourself until elbows are at 90 degrees, then push back up."
+        "instructions": "Grip parallel bars, lower yourself until elbows are at 90 degrees, then push back up.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Triceps Pushdown",
@@ -181,7 +313,13 @@
         "muscle": "triceps",
         "equipment": "cable",
         "difficulty": "beginner",
-        "instructions": "Grip the cable attachment, push it down until arms are fully extended, then return slowly."
+        "instructions": "Grip the cable attachment, push it down until arms are fully extended, then return slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Overhead Triceps Extension",
@@ -189,7 +327,13 @@
         "muscle": "triceps",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Hold a dumbbell overhead with both hands. Lower behind your head, then extend back up."
+        "instructions": "Hold a dumbbell overhead with both hands. Lower behind your head, then extend back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Close-Grip Bench Press",
@@ -197,7 +341,13 @@
         "muscle": "triceps",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Lie on a flat bench, grip the barbell with hands closer than shoulder-width. Lower to your chest, then press back up."
+        "instructions": "Lie on a flat bench, grip the barbell with hands closer than shoulder-width. Lower to your chest, then press back up.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Skull Crushers",
@@ -205,7 +355,13 @@
         "muscle": "triceps",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Lie on a bench, hold an EZ bar with an overhand grip. Lower the bar to your forehead, then extend your arms back up."
+        "instructions": "Lie on a bench, hold an EZ bar with an overhand grip. Lower the bar to your forehead, then extend your arms back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Dumbbell Shoulder Press",
@@ -213,7 +369,13 @@
         "muscle": "shoulders",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Sit or stand with a dumbbell in each hand at shoulder height. Press the weights overhead, then lower back to the starting position."
+        "instructions": "Sit or stand with a dumbbell in each hand at shoulder height. Press the weights overhead, then lower back to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Barbell Overhead Press",
@@ -221,7 +383,13 @@
         "muscle": "shoulders",
         "equipment": "barbell",
         "difficulty": "intermediate",
-        "instructions": "Stand with feet shoulder-width apart, hold a barbell at shoulder height. Press the bar overhead, then lower back down."
+        "instructions": "Stand with feet shoulder-width apart, hold a barbell at shoulder height. Press the bar overhead, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     },
     {
         "name": "Arnold Press",
@@ -229,7 +397,13 @@
         "muscle": "shoulders",
         "equipment": "dumbbell",
         "difficulty": "intermediate",
-        "instructions": "Hold dumbbells at shoulder height with palms facing you. Rotate palms outward as you press the weights overhead, then lower."
+        "instructions": "Hold dumbbells at shoulder height with palms facing you. Rotate palms outward as you press the weights overhead, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Lateral Raise",
@@ -237,7 +411,13 @@
         "muscle": "shoulders",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Hold a dumbbell in each hand at your sides. Raise arms out to the sides until they reach shoulder height, then lower slowly."
+        "instructions": "Hold a dumbbell in each hand at your sides. Raise arms out to the sides until they reach shoulder height, then lower slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Front Raise",
@@ -245,7 +425,13 @@
         "muscle": "shoulders",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Hold a dumbbell in each hand, palms facing your thighs. Lift the weights forward to shoulder height, then lower."
+        "instructions": "Hold a dumbbell in each hand, palms facing your thighs. Lift the weights forward to shoulder height, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Rear Delt Fly",
@@ -253,7 +439,13 @@
         "muscle": "shoulders",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Bend at the waist, hold dumbbells with palms facing in. Raise arms out to the sides, squeezing shoulder blades together, then lower."
+        "instructions": "Bend at the waist, hold dumbbells with palms facing in. Raise arms out to the sides, squeezing shoulder blades together, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Face Pull",
@@ -261,7 +453,13 @@
         "muscle": "shoulders",
         "equipment": "cable",
         "difficulty": "beginner",
-        "instructions": "Attach a rope to a cable machine at face height. Pull the rope towards your face, squeezing your shoulder blades together."
+        "instructions": "Attach a rope to a cable machine at face height. Pull the rope towards your face, squeezing your shoulder blades together.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Cable Lateral Raise",
@@ -269,7 +467,13 @@
         "muscle": "shoulders",
         "equipment": "cable",
         "difficulty": "beginner",
-        "instructions": "Stand beside a cable machine, grasp the handle with the opposite hand. Raise arm out to the side, then lower slowly."
+        "instructions": "Stand beside a cable machine, grasp the handle with the opposite hand. Raise arm out to the side, then lower slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Seated Dumbbell Shrug",
@@ -277,7 +481,13 @@
         "muscle": "traps",
         "equipment": "dumbbell",
         "difficulty": "beginner",
-        "instructions": "Sit on a bench holding dumbbells. Shrug your shoulders as high as possible, then lower back down."
+        "instructions": "Sit on a bench holding dumbbells. Shrug your shoulders as high as possible, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Barbell Shrug",
@@ -285,7 +495,13 @@
         "muscle": "traps",
         "equipment": "barbell",
         "difficulty": "beginner",
-        "instructions": "Hold a barbell in front of your thighs with an overhand grip. Shrug your shoulders up, then lower back down."
+        "instructions": "Hold a barbell in front of your thighs with an overhand grip. Shrug your shoulders up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Hanging Leg Raise",
@@ -293,7 +509,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "intermediate",
-        "instructions": "Hang from a pull-up bar, raise legs straight in front of you to waist height, then lower back down."
+        "instructions": "Hang from a pull-up bar, raise legs straight in front of you to waist height, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Decline Sit-Up",
@@ -301,7 +523,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "intermediate",
-        "instructions": "Lie on a decline bench with feet secured. Perform a sit-up by contracting your abs, then lower back down."
+        "instructions": "Lie on a decline bench with feet secured. Perform a sit-up by contracting your abs, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Russian Twist",
@@ -309,7 +537,13 @@
         "muscle": "core",
         "equipment": "medicine ball",
         "difficulty": "intermediate",
-        "instructions": "Sit on the ground, hold a medicine ball. Twist your torso side to side, keeping your core engaged."
+        "instructions": "Sit on the ground, hold a medicine ball. Twist your torso side to side, keeping your core engaged.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Plank",
@@ -317,7 +551,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "beginner",
-        "instructions": "Lie face down, rest on forearms and toes. Keep body straight and core engaged, holding the position as long as possible."
+        "instructions": "Lie face down, rest on forearms and toes. Keep body straight and core engaged, holding the position as long as possible.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
     },
     {
         "name": "Side Plank",
@@ -325,7 +565,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "beginner",
-        "instructions": "Lie on your side, prop up on one forearm. Keep body straight and hold the position for the desired duration."
+        "instructions": "Lie on your side, prop up on one forearm. Keep body straight and hold the position for the desired duration.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
     },
     {
         "name": "Hanging Knee Raise",
@@ -333,7 +579,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "intermediate",
-        "instructions": "Hang from a pull-up bar, raise knees towards your chest, then lower back down."
+        "instructions": "Hang from a pull-up bar, raise knees towards your chest, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Reverse Crunch",
@@ -341,7 +593,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "beginner",
-        "instructions": "Lie on your back, lift legs off the ground. Curl knees towards your chest, then lower back down."
+        "instructions": "Lie on your back, lift legs off the ground. Curl knees towards your chest, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Leg Raises",
@@ -349,7 +607,13 @@
         "muscle": "core",
         "equipment": "body weight",
         "difficulty": "beginner",
-        "instructions": "Lie flat, keep legs straight. Lift them to 90 degrees, then lower slowly."
+        "instructions": "Lie flat, keep legs straight. Lift them to 90 degrees, then lower slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Cable Woodchopper",
@@ -357,7 +621,13 @@
         "muscle": "core",
         "equipment": "cable",
         "difficulty": "intermediate",
-        "instructions": "Attach a handle to a cable machine at a high setting. Pull the cable diagonally across your body while twisting your torso."
+        "instructions": "Attach a handle to a cable machine at a high setting. Pull the cable diagonally across your body while twisting your torso.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
     },
     {
         "name": "Battle Ropes",
@@ -365,7 +635,13 @@
         "muscle": "full body",
         "equipment": "battle ropes",
         "difficulty": "intermediate",
-        "instructions": "Hold battle ropes in each hand. Use quick, alternating arm movements to create waves."
+        "instructions": "Hold battle ropes in each hand. Use quick, alternating arm movements to create waves.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
     },
     {
         "name": "Kettlebell Swing",
@@ -373,7 +649,13 @@
         "muscle": "legs",
         "equipment": "kettlebell",
         "difficulty": "intermediate",
-        "instructions": "Stand with feet shoulder-width apart. Swing the kettlebell between your legs, then drive hips forward to propel it upward."
+        "instructions": "Stand with feet shoulder-width apart. Swing the kettlebell between your legs, then drive hips forward to propel it upward.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
     },
     {
         "name": "Box Jump",
@@ -381,6 +663,656 @@
         "muscle": "legs",
         "equipment": "plyo box",
         "difficulty": "intermediate",
-        "instructions": "Stand in front of a box, jump up, landing softly on top, then step down."
+        "instructions": "Stand in front of a box, jump up, landing softly on top, then step down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Incline Dumbbell Press",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "dumbbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on an incline bench with dumbbells in each hand. Press the weights up until arms are fully extended, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Chest Fly",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Lie on a flat bench, hold dumbbells above your chest. Lower the weights out to the sides, then bring them back together.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Chest Fly",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "cable",
+        "difficulty": "intermediate",
+        "instructions": "Stand between two cable machines, grasp the handles. Bring your hands together in front of your chest, then return to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Push-Up",
+        "type": "strength",
+        "muscle": "chest",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Start in a plank position, lower your body until your chest nearly touches the ground, then push back up.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Wide-Grip Pull-Up",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Grab a pull-up bar with a wide grip. Pull yourself up until your chin is over the bar, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Chin-Up",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Grab a pull-up bar with an underhand grip. Pull yourself up until your chin is over the bar, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "T-Bar Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Stand over a T-bar row machine, grip the handles. Pull the bar towards your torso, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Single-Arm Dumbbell Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Place one knee on a bench, hold a dumbbell in the opposite hand. Pull the weight to your side, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Inverted Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie under a bar, grip it with an overhand grip. Pull your chest up to the bar, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Row",
+        "type": "strength",
+        "muscle": "back",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Sit at a cable row machine, grip the handle. Pull the handle towards your torso, then return to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Preacher Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Sit at a preacher bench, hold a barbell with an underhand grip. Curl the bar up, then lower slowly.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Concentration Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Sit on a bench, hold a dumbbell in one hand. Curl the weight up, focusing on your bicep, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Zottman Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "dumbbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold dumbbells with palms facing up. Curl the weights up, then rotate your palms down and lower the weights.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Incline Dumbbell Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "dumbbell",
+        "difficulty": "intermediate",
+        "instructions": "Sit on an incline bench, hold dumbbells with palms facing up. Curl the weights up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Bicep Curl",
+        "type": "strength",
+        "muscle": "biceps",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Stand in front of a cable machine, grip the handle with an underhand grip. Curl the handle up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Lying Triceps Extension",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Lie on a bench, hold a barbell with an overhand grip. Lower the bar to your forehead, then extend your arms back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Dumbbell Kickback",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Bend at the waist, hold a dumbbell in each hand. Extend your arms back, squeezing your triceps, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Overhead Triceps Extension",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Attach a rope to a cable machine, hold it overhead. Lower the rope behind your head, then extend your arms back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Diamond Push-Up",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Start in a push-up position with your hands close together, forming a diamond shape. Lower your body, then push back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "EZ Bar Triceps Extension",
+        "type": "strength",
+        "muscle": "triceps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold an EZ bar with an overhand grip. Lower the bar behind your head, then extend your arms back up.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Seated Barbell Overhead Press",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Sit on a bench, hold a barbell at shoulder height. Press the bar overhead, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Dumbbell Lateral Raise",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold dumbbells at your sides, raise them out to the sides until they reach shoulder height, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Front Raise",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Stand in front of a cable machine, grip the handle with one hand. Lift the handle forward to shoulder height, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Reverse Fly",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Bend at the waist, hold dumbbells with palms facing in. Raise arms out to the sides, squeezing shoulder blades together, then lower.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Rear Delt Fly",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "cable",
+        "difficulty": "intermediate",
+        "instructions": "Stand between two cable machines, grasp the handles. Pull your arms back, squeezing your shoulder blades together, then return to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Upright Row",
+        "type": "strength",
+        "muscle": "shoulders",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold a barbell with an overhand grip, lift it straight up to your chin, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Dumbbell Shrug",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold dumbbells at your sides, shrug your shoulders up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Farmer's Walk",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "dumbbell",
+        "difficulty": "beginner",
+        "instructions": "Hold heavy dumbbells at your sides, walk a set distance while keeping your core engaged.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Shrug",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "cable",
+        "difficulty": "beginner",
+        "instructions": "Stand in front of a cable machine, grip the handles. Shrug your shoulders up, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Barbell Upright Row",
+        "type": "strength",
+        "muscle": "traps",
+        "equipment": "barbell",
+        "difficulty": "intermediate",
+        "instructions": "Hold a barbell with an overhand grip, lift it straight up to your chin, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Mountain Climbers",
+        "type": "cardio",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Start in a plank position, bring one knee towards your chest, then switch legs quickly.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
+    },
+    {
+        "name": "Bicycle Crunch",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your back, bring one knee towards your chest while twisting your torso to touch the opposite elbow to the knee.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "V-Up",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Lie on your back, lift your legs and torso off the ground simultaneously, forming a V shape, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Flutter Kicks",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your back, lift your legs slightly off the ground. Alternate kicking your legs up and down.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
+    },
+    {
+        "name": "Toe Touches",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your back, lift your legs straight up. Reach your hands towards your toes, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Side Crunch",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Lie on your side, lift your legs and torso off the ground simultaneously, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 10-12 reps",
+            "intermediate": "4 sets x 12-15 reps",
+            "advanced": "5 sets x 15-20 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Cable Crunch",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "cable",
+        "difficulty": "intermediate",
+        "instructions": "Attach a rope to a cable machine, kneel down. Pull the rope down while crunching your abs, then return to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 8-10 reps",
+            "intermediate": "4 sets x 10-12 reps",
+            "advanced": "5 sets x 12-15 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Ab Wheel Rollout",
+        "type": "strength",
+        "muscle": "core",
+        "equipment": "ab wheel",
+        "difficulty": "intermediate",
+        "instructions": "Kneel on the ground, hold an ab wheel. Roll the wheel forward, keeping your core engaged, then roll back to the starting position.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Jump Rope",
+        "type": "cardio",
+        "muscle": "full body",
+        "equipment": "jump rope",
+        "difficulty": "beginner",
+        "instructions": "Hold a jump rope in each hand, swing it over your head and jump over it as it passes under your feet.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
+    },
+    {
+        "name": "Burpees",
+        "type": "cardio",
+        "muscle": "full body",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Start in a standing position, drop into a push-up position, perform a push-up, then jump back up to standing.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Sprinting",
+        "type": "cardio",
+        "muscle": "legs",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Run at maximum speed for a short distance, focusing on explosive power.",
+        "recommendations": {
+            "beginner": "3 sets x 20-30 seconds",
+            "intermediate": "4 sets x 30-45 seconds",
+            "advanced": "5 sets x 45-60 seconds"
+        },
+        "saved": false
+    },
+    {
+        "name": "Jump Squat",
+        "type": "plyometrics",
+        "muscle": "legs",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Perform a squat, then jump explosively into the air, landing softly back into a squat position.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Lunge Jump",
+        "type": "plyometrics",
+        "muscle": "legs",
+        "equipment": "body weight",
+        "difficulty": "intermediate",
+        "instructions": "Perform a lunge, then jump explosively into the air, switching legs mid-air and landing in a lunge position.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Step-Up",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Stand in front of a step or bench, step up onto it with one leg, then bring the other leg up. Step back down and repeat.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Wall Sit",
+        "type": "strength",
+        "muscle": "legs",
+        "equipment": "body weight",
+        "difficulty": "beginner",
+        "instructions": "Stand with your back against a wall, lower yourself into a seated position with thighs parallel to the ground, and hold.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
+    },
+    {
+        "name": "Calf Press on Leg Press Machine",
+        "type": "strength",
+        "muscle": "calves",
+        "equipment": "machine",
+        "difficulty": "beginner",
+        "instructions": "Sit on a leg press machine, place your toes on the platform. Press the weight up using your calves, then lower back down.",
+        "recommendations": {
+            "beginner": "3 sets x 6-8 reps",
+            "intermediate": "4 sets x 8-10 reps",
+            "advanced": "5 sets x 10-12 reps"
+        },
+        "saved": false
     }
 ]

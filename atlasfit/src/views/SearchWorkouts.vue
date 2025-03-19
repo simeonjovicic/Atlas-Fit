@@ -14,6 +14,15 @@
         placeholder="Search exercises..."
       ></ion-searchbar>
 
+      <ion-segment v-model="filterType" @ionChange="filterExercises">
+        <ion-segment-button value="all">
+          <ion-label>All</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="saved">
+          <ion-label>Saved</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
       <ion-grid>
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="8" size-lg="6">
@@ -22,17 +31,20 @@
                 <ion-item-divider class="letter-divider">{{ letter }}</ion-item-divider>
                 
                 <template v-for="(exercise, index) in exercises" :key="exercise.name">
-                  <ion-item 
-                    class="custom-item" 
-                    @click="openModal(exercise)"
-                  >
-                    <ion-label>
-                      <h2 class="exercise-title">{{ exercise.name }}</h2>
-                      <p class="muscle-name"><strong>{{ exercise.muscle }}</strong></p>
-                    </ion-label>
-                  </ion-item>
-                  <div v-if="index === exercises.length - 1" class="group-padding"></div>
-                </template>
+  <ion-item class="custom-item" @click="openModal(exercise)">
+    <ion-label>
+      <h2 class="exercise-title">{{ exercise.name }}</h2>
+      <p class="muscle-name"><strong>{{ exercise.muscle }}</strong></p>
+    </ion-label>
+    <ion-icon
+      :icon="exercise.saved ? bookmarkSharp : bookmarkOutline"
+      slot="end"
+      class="bookmark-icon"
+      @click.stop="toggleBookmark(exercise)"
+    ></ion-icon>
+  </ion-item>
+  <div v-if="index === exercises.length - 1" class="group-padding"></div>
+</template>
               </template>
             </ion-list>
           </ion-col>
@@ -44,37 +56,87 @@
     </ion-content>
 
     <!-- Modal to show exercise details -->
-    <ion-modal :is-open="isOpen" @willDismiss="closeModal">
+    <ion-modal :is-open="isOpen" @willDismiss="closeModal" class="exercise-modal">
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
             <ion-button @click="closeModal()">
-              <ion-icon :icon="arrowBackOutline"></ion-icon>
+              <ion-icon :icon="closeOutline"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-title>{{ selectedExercise?.name }}</ion-title>
+          <ion-title>Exercise Details</ion-title>
+          <ion-buttons slot="end">
+            <ion-button @click="toggleBookmark(selectedExercise)">
+              <ion-icon :icon="selectedExercise?.saved ? bookmarkSharp : bookmarkOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding">
-        <ion-item class="modal-item">
-          <ion-label class="modal-label">
-            <h2>{{ selectedExercise?.name }}</h2>
-            <p class="modal-type"><strong>Type:</strong> {{ selectedExercise?.type }}</p>
-            <p class="modal-muscle"><strong>Muscle:</strong> {{ selectedExercise?.muscle }}</p>
-            <p class="modal-equipment"><strong>Equipment:</strong> {{ selectedExercise?.equipment }}</p>
-            <p class="modal-difficulty"><strong>Difficulty:</strong> {{ selectedExercise?.difficulty }}</p>
-            <p class="modal-instructions"><strong>Instructions:</strong></p>
-            <p>{{ selectedExercise?.instructions }}</p>
-          </ion-label>
-        </ion-item>
+      <ion-content class="ion-padding-bottom">
+        <div class="exercise-header">
+          <h1 class="exercise-name">{{ selectedExercise?.name }}</h1>
+          <div class="exercise-muscle-badge">{{ selectedExercise?.muscle }}</div>
+        </div>
+
+        <div class="exercise-stats">
+          <div class="stat-item">
+            <ion-icon :icon="barbellOutline" class="stat-icon"></ion-icon>
+            <div class="stat-label">Type</div>
+            <div class="stat-value">{{ selectedExercise?.type }}</div>
+          </div>
+          <div class="stat-item">
+            <ion-icon :icon="fitnessOutline" class="stat-icon"></ion-icon>
+            <div class="stat-label">Muscle</div>
+            <div class="stat-value">{{ selectedExercise?.muscle }}</div>
+          </div>
+          <div class="stat-item">
+            <ion-icon :icon="constructOutline" class="stat-icon"></ion-icon>
+            <div class="stat-label">Equipment</div>
+            <div class="stat-value">{{ selectedExercise?.equipment }}</div>
+          </div>
+          <div class="stat-item">
+            <ion-icon :icon="speedometerOutline" class="stat-icon"></ion-icon>
+            <div class="stat-label">Difficulty</div>
+            <div class="stat-value">{{ selectedExercise?.difficulty }}</div>
+          </div>
+        </div>
+
+        <div class="instructions-section">
+          <h2 class="section-title">
+            <ion-icon :icon="documentTextOutline" class="section-icon"></ion-icon>
+            Instructions
+          </h2>
+          <p class="instructions-text">{{ selectedExercise?.instructions }}</p>
+        </div>
+
+        <div class="recommendations-section">
+          <h2 class="section-title">
+            <ion-icon :icon="flameOutline" class="section-icon"></ion-icon>
+            Recommended Sets & Reps
+          </h2>
+          <div class="recommendation-list">
+            <div class="recommendation-item">
+              <div class="recommendation-label">Beginner</div>
+              <div class="recommendation-value">{{ selectedExercise?.recommendations.beginner }}</div>
+            </div>
+            <div class="recommendation-item">
+              <div class="recommendation-label">Intermediate</div>
+              <div class="recommendation-value">{{ selectedExercise?.recommendations.intermediate }}</div>
+            </div>
+            <div class="recommendation-item">
+              <div class="recommendation-label">Advanced</div>
+              <div class="recommendation-value">{{ selectedExercise?.recommendations.advanced }}</div>
+            </div>
+          </div>
+        </div>
       </ion-content>
     </ion-modal>
   </ion-page>
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import {
   IonPage,
   IonHeader,
@@ -88,11 +150,24 @@ import {
   IonSpinner,
   IonItemDivider,
   IonModal,
-  IonButton,
-  IonButtons,
+  IonIcon,
+  IonSegment,
+  IonSegmentButton,
 } from "@ionic/vue";
 import exercisesData from "@/resources/exercises.json";
-import { arrowBackOutline } from "ionicons/icons";
+
+import { 
+  arrowBackOutline, 
+  closeOutline,
+  bookmarkOutline,
+  bookmarkSharp,
+  barbellOutline,
+  fitnessOutline,
+  constructOutline,
+  speedometerOutline,
+  documentTextOutline,
+  flameOutline
+} from "ionicons/icons";
 
 export default {
   components: {
@@ -108,8 +183,9 @@ export default {
     IonSpinner,
     IonItemDivider,
     IonModal,
-    IonButton,
-    IonButtons
+    IonIcon,
+    IonSegment,
+    IonSegmentButton,
   },
   setup() {
     const searchQuery = ref("");
@@ -118,14 +194,21 @@ export default {
     const errorMessage = ref("");
     const isOpen = ref(false);
     const selectedExercise = ref(null);
+    const filterType = ref("all");
 
     const filteredExercises = computed(() => {
       let filtered = exercises.value;
 
+      // Filter by search query
       if (searchQuery.value.trim()) {
-        filtered = exercises.value.filter((exercise) =>
+        filtered = filtered.filter((exercise) =>
           exercise.name.toLowerCase().includes(searchQuery.value.toLowerCase())
         );
+      }
+
+      // Filter by saved status
+      if (filterType.value === "saved") {
+        filtered = filtered.filter((exercise) => exercise.saved);
       }
 
       return filtered.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
@@ -151,7 +234,61 @@ export default {
       isOpen.value = false;
     };
 
-    return { searchQuery, groupedExercises, loading, errorMessage, isOpen, selectedExercise, openModal, closeModal, arrowBackOutline };
+    const toggleBookmark = (exercise) => {
+      if (!exercise) return;
+
+      // Toggle the saved state
+      exercise.saved = !exercise.saved;
+
+      // Find the exercise in the original data and update it
+      const index = exercises.value.findIndex(e => e.name === exercise.name);
+      if (index !== -1) {
+        exercises.value[index].saved = exercise.saved;
+      }
+
+      // Here you would typically save the updated state to localStorage or a database
+      // For example:
+      // localStorage.setItem('savedExercises', JSON.stringify(exercises.value));
+    };
+
+    const filterExercises = () => {
+      // This function is called when the search input changes or the segment changes
+      // The filtering logic is handled by the computed property
+    };
+
+    // Optional: Load saved state from localStorage on component creation
+    // const loadSavedState = () => {
+    //   const savedData = localStorage.getItem('savedExercises');
+    //   if (savedData) {
+    //     exercises.value = JSON.parse(savedData);
+    //   }
+    // };
+    // 
+    // loadSavedState();
+
+    return { 
+      searchQuery, 
+      groupedExercises, 
+      loading, 
+      errorMessage, 
+      isOpen, 
+      selectedExercise, 
+      openModal, 
+      closeModal, 
+      toggleBookmark,
+      filterType,
+      filterExercises,
+      arrowBackOutline,
+      closeOutline,
+      bookmarkOutline,
+      bookmarkSharp,
+      barbellOutline,
+      fitnessOutline,
+      constructOutline,
+      speedometerOutline,
+      documentTextOutline,
+      flameOutline
+    };
   },
 };
 </script>
@@ -194,41 +331,151 @@ export default {
   padding: 10px;
 }
 
-/* Styling for the modal content */
-.modal-item {
+.bookmark-icon {
+  font-size: 1.4em;
+  color: var(--ion-color-primary);
+}
+
+/* Modal specific styles */
+.exercise-modal {
+  --height: 85%;
+  --width: 100%;
+  --border-radius: 16px 16px 0 0;
+  --box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-header {
+  padding: 16px 16px 0;
+  margin-bottom: 16px;
+}
+
+.exercise-name {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--ion-color-dark);
+}
+
+.exercise-muscle-badge {
+  display: inline-block;
+  background-color: var(--ion-color-primary);
+  color: white;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.exercise-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 0 16px 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: var(--ion-color-light);
+  border-radius: 12px;
   padding: 16px;
-  background: var(--ion-background-color);
 }
 
-.modal-label {
+.stat-icon {
+  font-size: 1.6em;
+  color: var(--ion-color-primary);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: var(--ion-color-medium);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  text-transform: capitalize;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+  margin: 0 0 16px 0;
+}
+
+.section-icon {
+  margin-right: 8px;
   font-size: 1.2em;
+  color: var(--ion-color-primary);
 }
 
-.modal-type,
-.modal-muscle,
-.modal-equipment,
-.modal-difficulty {
+.instructions-section {
+  padding: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.instructions-text {
   font-size: 1.1em;
-  margin-top: 12px;
+  line-height: 1.6;
+  color: var(--ion-color-dark);
 }
 
-.modal-instructions {
-  font-size: 1.1em;
-  margin-top: 16px;
+.recommendations-section {
+  padding: 0 16px 16px;
+  margin-bottom: 16px;
 }
 
-h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-bottom: 10px;
+.recommendation-list {
+  background-color: var(--ion-color-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recommendation-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.recommendation-item:last-child {
+  border-bottom: none;
+}
+
+.recommendation-label {
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.recommendation-value {
+  color: var(--ion-color-medium);
+}
+
+.action-buttons {
+  padding: 0 16px 24px;
 }
 
 ion-button {
-  margin-left: 0;
+  margin-bottom: 12px;
+  height: 48px;
+  font-weight: 600;
+  --border-radius: 12px;
 }
 
-ion-icon {
-  font-size: 1.5em;
+.watch-button {
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-dark);
 }
-
 </style>
