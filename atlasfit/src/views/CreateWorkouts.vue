@@ -3,26 +3,33 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Create Workout</ion-title>
+        <ion-buttons slot="end">
+          <ion-button>
+            <ion-icon :icon="settingsOutline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <div class="create-workout-container">
         <!-- Button to create a new workout -->
-        <ion-button @click="openWorkoutCreationModal">Create New Workout</ion-button>
+        <ion-button expand="block" class="create-button" @click="openWorkoutCreationModal">
+          Create New Workout
+        </ion-button>
 
-        <!-- Display list of created workouts in a grid -->
-        <div v-if="workouts.length > 0">
+        <!-- Display list of created workouts -->
+        <div v-if="workouts.length > 0" class="workouts-list">
           <h3>Your Workouts:</h3>
           <ion-grid>
             <ion-row>
               <ion-col size="6" v-for="workout in workouts" :key="workout.id">
-                <ion-card class="workout-card">
+                <ion-card class="workout-card" @click="openWorkoutDetailsModal(workout)">
                   <ion-card-header>
                     <div class="workout-header">
                       <ion-card-title>{{ workout.name }}</ion-card-title>
-                      <ion-button fill="clear" @click="openWorkoutOptionsPopover($event, workout)">
-                        <ion-icon :icon="informationCircleOutline"></ion-icon>
+                      <ion-button fill="clear" @click.stop="openWorkoutOptionsPopover($event, workout)">
+                        <ion-icon :icon="ellipsisVertical"></ion-icon>
                       </ion-button>
                     </div>
                     <ion-card-subtitle>{{ workout.exercises.length }} exercises</ion-card-subtitle>
@@ -32,71 +39,143 @@
             </ion-row>
           </ion-grid>
         </div>
-        <div v-else>
+        <div v-else class="no-workouts-message">
           <p>No workouts created yet.</p>
         </div>
       </div>
 
       <!-- First Modal: Create Workout -->
-      <ion-modal :is-open="isWorkoutCreationModalOpen" @didDismiss="closeWorkoutCreationModal">
+      <ion-modal :is-open="isWorkoutCreationModalOpen" @didDismiss="closeWorkoutCreationModal" class="workout-modal">
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
-              <ion-button @click="closeWorkoutCreationModal"><ion-icon :icon="closeOutline"></ion-icon></ion-button>
+              <ion-button @click="closeWorkoutCreationModal">
+                <ion-icon :icon="closeOutline"></ion-icon>
+              </ion-button>
             </ion-buttons>
+            <ion-title>New template</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="saveNewWorkout"><ion-icon :icon="checkmarkOutline"></ion-icon></ion-button>
+              <ion-button @click="saveNewWorkout" :disabled="!canSaveWorkout">
+                <ion-icon :icon="checkmarkOutline"></ion-icon>
+              </ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <!-- Workout Name Input -->
-          <ion-item>
-            <ion-label position="stacked">Workout Name</ion-label>
-            <ion-input v-model="newWorkoutName" placeholder="Enter workout name"></ion-input>
-          </ion-item>
+  <!-- Workout Name Input -->
+  <div class="workout-form">
+    <ion-item lines="none" class="name-input">
+      <ion-input v-model="newWorkoutName" placeholder="New template" class="template-name"></ion-input>
+    </ion-item>
 
-          <!-- Button to Add Exercises -->
-          <ion-button expand="block" @click="openAddExercisesModal">Add Exercises</ion-button>
+    <!-- Button to Add Exercises -->
+    <ion-button expand="block" class="add-exercise-btn" @click="openAddExercisesModal">
+      ADD EXERCISE
+    </ion-button>
 
-          <!-- List of Selected Exercises with Reps and Sets -->
-          <ion-list>
-            <ion-item v-for="(exercise, index) in selectedExercises" :key="index">
-              <ion-label>
-                <h3>{{ exercise.name }}</h3>
-                <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
-              </ion-label>
-              <ion-input
-                type="number"
-                placeholder="Reps"
-                v-model="exercise.reps"
-              ></ion-input>
-              <ion-input
-                type="number"
-                placeholder="Sets"
-                v-model="exercise.sets"
-              ></ion-input>
-            </ion-item>
-          </ion-list>
-        </ion-content>
+    <!-- List of Selected Exercises with Reps, Sets, and Rest -->
+    <div v-if="selectedExercises.length > 0" class="exercises-list">
+      <div v-for="(exercise, index) in selectedExercises" :key="index" class="exercise-item">
+        <ion-item lines="none" class="exercise-header">
+          <ion-label>
+            <h2>{{ exercise.name }}</h2>
+            <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
+          </ion-label>
+          <ion-buttons slot="end">
+            <ion-button @click="removeExercise(index)">
+              <ion-icon :icon="trashOutline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+
+        <div class="sets-container">
+          <div class="sets-header">
+            <div class="set-col">SET</div>
+            <div class="previous-col">PREVIOUS</div>
+            <div class="weight-col">(+KG)</div>
+            <div class="reps-col">REPS</div>
+            <div class="lock-col"></div>
+          </div>
+
+          <!-- Sets with rest timers in between -->
+          <div v-for="(set, setIndex) in exercise.sets" :key="`${index}-${setIndex}`">
+            <!-- Set row -->
+            <div class="set-row">
+              <div class="set-col">{{ setIndex + 1 }}</div>
+              <div class="previous-col">—</div>
+              <div class="weight-col">
+                <ion-input type="number" v-model="set.weight" class="weight-input"></ion-input>
+              </div>
+              <div class="reps-col">
+                <ion-input type="number" v-model="set.reps" class="reps-input"></ion-input>
+              </div>
+              <div class="lock-col">
+                <ion-icon :icon="lockClosedOutline" v-if="set.locked"></ion-icon>
+              </div>
+            </div>
+
+            <!-- Rest timer after each set (except the last one) -->
+            <div v-if="setIndex < exercise.sets.length - 1" class="rest-timer-between-sets">
+              <div class="rest-label">Rest after set {{ setIndex + 1 }}:</div>
+              <ion-range v-model="set.restTime" min="0" max="300" step="5" class="rest-slider">
+                <div slot="start">0:00</div>
+                <div slot="end">5:00</div>
+              </ion-range>
+              <div class="timer-display">{{ formatTime(set.restTime) }}</div>
+            </div>
+          </div>
+
+          <ion-button expand="block" class="add-set-btn" @click="addSet(exercise)">
+            ADD SET
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Rest time between exercises -->
+      <div v-for="(exercise, index) in selectedExercises" :key="`exercise-rest-${index}`">
+        <div v-if="index < selectedExercises.length - 1" class="rest-between-exercises">
+          <div class="exercise-rest-label">Rest between {{ exercise.name }} and {{ selectedExercises[index + 1].name }}:</div>
+          <ion-range v-model="exercise.restBetweenExercises" min="0" max="300" step="5" class="rest-slider">
+            <div slot="start">0:00</div>
+            <div slot="end">5:00</div>
+          </ion-range>
+          <div class="timer-display">{{ formatTime(exercise.restBetweenExercises) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
       </ion-modal>
 
       <!-- Second Modal: Add Exercises -->
-      <ion-modal :is-open="isAddExercisesModalOpen" @didDismiss="closeAddExercisesModal">
+      <ion-modal :is-open="isAddExercisesModalOpen" @didDismiss="closeAddExercisesModal" class="exercises-modal">
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
-              <ion-button @click="closeAddExercisesModal"><ion-icon :icon="closeOutline"></ion-icon></ion-button>
+              <ion-button @click="closeAddExercisesModal">
+                <ion-icon :icon="closeOutline"></ion-icon>
+              </ion-button>
             </ion-buttons>
+            <ion-title>Add Exercise</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="addSelectedExercises"><ion-icon :icon="checkmarkOutline"></ion-icon></ion-button>
+              <ion-button @click="confirmSelectedExercises">
+                <ion-icon :icon="checkmarkOutline"></ion-icon>
+              </ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <ion-list>
-            <ion-item v-for="exercise in exercises" :key="exercise.name">
-              <ion-label>{{ exercise.name }}</ion-label>
+          <ion-searchbar placeholder="Search exercises" v-model="exerciseSearchTerm" class="exercise-search"></ion-searchbar>
+          
+          <ion-list class="exercises-list">
+            <ion-item-divider sticky>
+              <ion-label>Select exercises</ion-label>
+            </ion-item-divider>
+            <ion-item v-for="exercise in filteredExercises" :key="exercise.name" class="exercise-item">
+              <ion-label>
+                <h2>{{ exercise.name }}</h2>
+                <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
+              </ion-label>
               <ion-checkbox
                 :checked="isExerciseSelected(exercise)"
                 @ionChange="toggleExerciseSelection(exercise)"
@@ -107,27 +186,37 @@
       </ion-modal>
 
       <!-- Modal for viewing workout details -->
-      <ion-modal :is-open="isWorkoutDetailsModalOpen" @didDismiss="closeWorkoutDetailsModal">
+      <ion-modal :is-open="isWorkoutDetailsModalOpen" @didDismiss="closeWorkoutDetailsModal" class="details-modal">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Workout Details</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="closeWorkoutDetailsModal">Close</ion-button>
+            <ion-buttons slot="start">
+              <ion-button @click="closeWorkoutDetailsModal">
+                <ion-icon :icon="closeOutline"></ion-icon>
+              </ion-button>
             </ion-buttons>
+            <ion-title>Workout Details</ion-title>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <div v-if="selectedWorkout">
-            <h2>{{ selectedWorkout.name }}</h2>
+          <div v-if="selectedWorkout" class="workout-details">
+            <h2 class="workout-name">{{ selectedWorkout.name }}</h2>
             <ion-list>
-              <ion-item v-for="(exercise, index) in selectedWorkout.exercises" :key="index">
+              <ion-item v-for="(exercise, index) in selectedWorkout.exercises" :key="index" class="exercise-detail">
                 <ion-label>
                   <h3>{{ exercise.name }}</h3>
                   <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
-                  <p>Reps: {{ exercise.reps }}, Sets: {{ exercise.sets }}</p>
+                  <div class="sets-details">
+                    <div v-for="(set, setIndex) in exercise.sets" :key="`${index}-${setIndex}`" class="set-detail">
+                      <span>Set {{ setIndex + 1 }}: {{ set.reps }} reps × {{ set.weight || 0 }}kg</span>
+                    </div>
+                    <div class="rest-detail">Rest: {{ formatTime(exercise.restTime) }}</div>
+                  </div>
                 </ion-label>
               </ion-item>
             </ion-list>
+            <ion-button expand="block" @click="startWorkout(selectedWorkout)" class="start-workout-btn">
+              Start Workout
+            </ion-button>
           </div>
         </ion-content>
       </ion-modal>
@@ -137,14 +226,20 @@
         :is-open="isWorkoutOptionsPopoverOpen"
         :event="popoverEvent"
         @didDismiss="closeWorkoutOptionsPopover"
-        class="custom-popover"
+        class="options-popover"
       >
         <ion-content>
-          <ion-list>
-            <ion-item button @click="viewWorkoutDetails">
-              <ion-label>View</ion-label>
+          <ion-list lines="none">
+            <ion-item button @click="editWorkout">
+              <ion-icon :icon="createOutline" slot="start"></ion-icon>
+              <ion-label>Edit</ion-label>
             </ion-item>
-            <ion-item button @click="deleteWorkout">
+            <ion-item button @click="duplicateWorkout">
+              <ion-icon :icon="copyOutline" slot="start"></ion-icon>
+              <ion-label>Duplicate</ion-label>
+            </ion-item>
+            <ion-item button @click="deleteWorkout" class="delete-option">
+              <ion-icon :icon="trashOutline" slot="start"></ion-icon>
               <ion-label>Delete</ion-label>
             </ion-item>
           </ion-list>
@@ -155,7 +250,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import {
   IonPage,
   IonHeader,
@@ -166,6 +261,7 @@ import {
   IonModal,
   IonList,
   IonItem,
+  IonItemDivider,
   IonLabel,
   IonCheckbox,
   IonInput,
@@ -177,11 +273,31 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardSubtitle,
-  IonCardContent,
   IonPopover,
+  IonIcon,
+  IonSearchbar,
+  IonRange,
+  toastController,
+  alertController,
 } from '@ionic/vue';
-import exercises from '@/resources/exercises.json'; // Adjust the path to your JSON file
-import { checkmarkOutline, closeOutline, informationCircleOutline } from 'ionicons/icons';
+import {
+  checkmarkOutline,
+  closeOutline,
+  ellipsisHorizontal,
+  ellipsisVertical,
+  createOutline,
+  trashOutline,
+  copyOutline,
+  settingsOutline,
+  lockClosedOutline,
+} from 'ionicons/icons';
+
+import exercisesData from '@/resources/exercises.json';
+
+interface Set {
+  reps: number;
+  weight: number;
+}
 
 interface Exercise {
   name: string;
@@ -190,14 +306,15 @@ interface Exercise {
   equipment: string;
   difficulty: string;
   instructions: string;
-  reps?: number; // Added for reps
-  sets?: number; // Added for sets
+  sets: Set[];
+  restTime: number;
 }
 
 interface Workout {
   id: number;
   name: string;
   exercises: Exercise[];
+  lastPerformed?: string;
 }
 
 export default defineComponent({
@@ -212,6 +329,7 @@ export default defineComponent({
     IonModal,
     IonList,
     IonItem,
+    IonItemDivider,
     IonLabel,
     IonCheckbox,
     IonInput,
@@ -223,63 +341,121 @@ export default defineComponent({
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
-    IonCardContent,
     IonPopover,
+    IonIcon,
+    IonSearchbar,
+    IonRange,
   },
   setup() {
-    const isWorkoutCreationModalOpen = ref(false); // Controls the workout creation modal
-    const isAddExercisesModalOpen = ref(false); // Controls the add exercises modal
-    const isWorkoutDetailsModalOpen = ref(false); // Controls the workout details modal
-    const isWorkoutOptionsPopoverOpen = ref(false); // Controls the workout options popover
-    const popoverEvent = ref<Event | null>(null); // Stores the event for the popover
-    const newWorkoutName = ref(''); // Stores the name of the new workout
-    const selectedExercises = ref<Exercise[]>([]); // Stores selected exercises for the new workout
-    const workouts = ref<Workout[]>([]); // Stores all created workouts
-    const selectedWorkout = ref<Workout | null>(null); // Stores the currently selected workout for details
-    let nextWorkoutId = 1; // Unique ID for each workout
+    const isWorkoutCreationModalOpen = ref(false);
+    const isAddExercisesModalOpen = ref(false);
+    const isWorkoutDetailsModalOpen = ref(false);
+    const isWorkoutOptionsPopoverOpen = ref(false);
+    const popoverEvent = ref<Event | null>(null);
+    const newWorkoutName = ref('');
+    const selectedExercises = ref<Exercise[]>([]);
+    const tempSelectedExercises = ref<Exercise[]>([]);
+    const workouts = ref<Workout[]>([]);
+    const selectedWorkout = ref<Workout | null>(null);
+    const exerciseSearchTerm = ref('');
+    let nextWorkoutId = 1;
+    const editingWorkoutId = ref(null);
 
-    // Load workouts from JSON file (simulated using localStorage)
+    // Filter exercises based on search term
+    const filteredExercises = computed(() => {
+      if (!exerciseSearchTerm.value) {
+        return exercisesData;
+      }
+      const searchTerm = exerciseSearchTerm.value.toLowerCase();
+      return exercisesData.filter(exercise => 
+        exercise.name.toLowerCase().includes(searchTerm) || 
+        exercise.muscle.toLowerCase().includes(searchTerm) ||
+        exercise.equipment.toLowerCase().includes(searchTerm)
+      );
+    });
+
+    // Check if workout can be saved
+    const canSaveWorkout = computed(() => {
+      return newWorkoutName.value.trim() !== '' && selectedExercises.value.length > 0;
+    });
+
+    // Load workouts from localStorage
     const loadWorkouts = () => {
       const savedWorkouts = localStorage.getItem('workouts');
       if (savedWorkouts) {
         workouts.value = JSON.parse(savedWorkouts);
-        nextWorkoutId = workouts.value.length > 0 ? Math.max(...workouts.value.map((w) => w.id)) + 1 : 1;
+        nextWorkoutId = workouts.value.length > 0 
+          ? Math.max(...workouts.value.map((w) => w.id)) + 1 
+          : 1;
       }
     };
 
-    // Save workouts to JSON file (simulated using localStorage)
+    // Save workouts to localStorage
     const saveWorkouts = () => {
       localStorage.setItem('workouts', JSON.stringify(workouts.value));
     };
 
+    // Format time for rest period display
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
     // Check if an exercise is selected
-    const isExerciseSelected = (exercise: Exercise) => {
-      return selectedExercises.value.some((e) => e.name === exercise.name);
+    const isExerciseSelected = (exercise: any) => {
+      return tempSelectedExercises.value.some((e) => e.name === exercise.name);
     };
 
     // Toggle exercise selection
-    const toggleExerciseSelection = (exercise: Exercise) => {
+    const toggleExerciseSelection = (exercise: any) => {
       if (isExerciseSelected(exercise)) {
-        selectedExercises.value = selectedExercises.value.filter((e) => e.name !== exercise.name);
+        tempSelectedExercises.value = tempSelectedExercises.value.filter((e) => e.name !== exercise.name);
       } else {
-        selectedExercises.value.push({ ...exercise, reps: 0, sets: 0 }); // Add reps and sets
+        // Create a new exercise with default values
+        tempSelectedExercises.value.push({
+          ...exercise,
+          sets: [{ reps: 10, weight: 0 }],
+          restTime: 60, // Default rest time: 60 seconds
+        });
       }
+    };
+
+    // Add a set to an exercise
+    const addSet = (exercise: Exercise) => {
+      if (exercise.sets.length > 0) {
+        // Copy reps and weight from last set as starting point
+        const lastSet = exercise.sets[exercise.sets.length - 1];
+        exercise.sets.push({ reps: lastSet.reps, weight: lastSet.weight });
+      } else {
+        exercise.sets.push({ reps: 10, weight: 0 });
+      }
+    };
+
+    // Remove an exercise
+    const removeExercise = (index: number) => {
+      selectedExercises.value.splice(index, 1);
     };
 
     // Open the workout creation modal
     const openWorkoutCreationModal = () => {
+      newWorkoutName.value = '';
+      selectedExercises.value = [];
       isWorkoutCreationModalOpen.value = true;
     };
 
-    // Close the workout creation modal and reset form
+    // Close the workout creation modal
     const closeWorkoutCreationModal = () => {
-      isWorkoutCreationModalOpen.value = false;
-      newWorkoutName.value = '';
-      selectedExercises.value = [];
-    };
+  isWorkoutCreationModalOpen.value = false;
+  newWorkoutName.value = '';
+  selectedExercises.value = [];
+  editingWorkoutId.value = null; // Reset the editing ID when closing
+};
 
     // Open the add exercises modal
     const openAddExercisesModal = () => {
+      tempSelectedExercises.value = JSON.parse(JSON.stringify(selectedExercises.value));
+      exerciseSearchTerm.value = '';
       isAddExercisesModalOpen.value = true;
     };
 
@@ -288,8 +464,9 @@ export default defineComponent({
       isAddExercisesModalOpen.value = false;
     };
 
-    // Add selected exercises to the workout
-    const addSelectedExercises = () => {
+    // Confirm selected exercises
+    const confirmSelectedExercises = () => {
+      selectedExercises.value = tempSelectedExercises.value;
       closeAddExercisesModal();
     };
 
@@ -307,6 +484,7 @@ export default defineComponent({
 
     // Open the workout options popover
     const openWorkoutOptionsPopover = (event: Event, workout: Workout) => {
+      event.stopPropagation();
       popoverEvent.value = event;
       selectedWorkout.value = workout;
       isWorkoutOptionsPopoverOpen.value = true;
@@ -318,37 +496,135 @@ export default defineComponent({
       popoverEvent.value = null;
     };
 
-    // View workout details
-    const viewWorkoutDetails = () => {
+    // Edit workout
+    const editWorkout = async () => {
+  if (selectedWorkout.value) {
+    // Store the workout ID being edited
+    editingWorkoutId.value = selectedWorkout.value.id;
+    
+    // Set form values with the selected workout data
+    newWorkoutName.value = selectedWorkout.value.name;
+    selectedExercises.value = JSON.parse(JSON.stringify(selectedWorkout.value.exercises));
+    
+    closeWorkoutOptionsPopover();
+    isWorkoutCreationModalOpen.value = true;
+    
+    // No longer removing the workout here
+  }
+};
+
+    // Duplicate workout
+    const duplicateWorkout = async () => {
       if (selectedWorkout.value) {
-        openWorkoutDetailsModal(selectedWorkout.value);
+        const newWorkout = {
+          id: nextWorkoutId++,
+          name: `${selectedWorkout.value.name} (Copy)`,
+          exercises: JSON.parse(JSON.stringify(selectedWorkout.value.exercises)),
+        };
+        workouts.value.push(newWorkout);
+        saveWorkouts();
         closeWorkoutOptionsPopover();
+        
+        const toast = await toastController.create({
+          message: 'Workout duplicated successfully!',
+          duration: 2000,
+          position: 'bottom',
+          color: 'success'
+        });
+        toast.present();
       }
     };
 
     // Delete workout
-    const deleteWorkout = () => {
+    const deleteWorkout = async () => {
       if (selectedWorkout.value) {
-        workouts.value = workouts.value.filter((w) => w.id !== selectedWorkout.value!.id);
-        saveWorkouts(); // Save updated workouts to localStorage
-        closeWorkoutOptionsPopover();
+        const alert = await alertController.create({
+          header: 'Delete Workout',
+          message: `Are you sure you want to delete "${selectedWorkout.value.name}"?`,
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+            },
+            {
+              text: 'Delete',
+              role: 'destructive',
+              handler: () => {
+                workouts.value = workouts.value.filter((w) => w.id !== selectedWorkout.value!.id);
+                saveWorkouts();
+                closeWorkoutOptionsPopover();
+              }
+            }
+          ]
+        });
+        alert.present();
       }
     };
 
     // Save the new workout
-    const saveNewWorkout = () => {
-      if (newWorkoutName.value.trim() && selectedExercises.value.length > 0) {
-        const newWorkout: Workout = {
-          id: nextWorkoutId++,
-          name: newWorkoutName.value,
-          exercises: selectedExercises.value,
-        };
-        workouts.value.push(newWorkout);
-        saveWorkouts(); // Save workouts to JSON file (simulated)
-        closeWorkoutCreationModal();
-      } else {
-        alert('Please enter a workout name and select at least one exercise.');
+    const saveNewWorkout = async () => {
+  if (newWorkoutName.value.trim() && selectedExercises.value.length > 0) {
+    if (editingWorkoutId.value) {
+      // Update existing workout
+      workouts.value = workouts.value.filter(w => w.id !== editingWorkoutId.value);
+      
+      const updatedWorkout = {
+        id: editingWorkoutId.value,
+        name: newWorkoutName.value,
+        exercises: selectedExercises.value,
+      };
+      
+      workouts.value.push(updatedWorkout);
+      editingWorkoutId.value = null; // Reset the editing ID
+    } else {
+      // Create new workout
+      const newWorkout = {
+        id: nextWorkoutId++,
+        name: newWorkoutName.value,
+        exercises: selectedExercises.value,
+      };
+      workouts.value.push(newWorkout);
+    }
+    
+    saveWorkouts();
+    closeWorkoutCreationModal();
+    
+    const toast = await toastController.create({
+      message: 'Workout saved successfully!',
+      duration: 2000,
+      position: 'bottom',
+      color: 'success'
+    });
+    toast.present();
+  }
+};
+
+    // Start workout
+    const startWorkout = (workout: Workout) => {
+      // In a real app, this would navigate to the workout session screen
+      // For now, we'll just show a message
+      closeWorkoutDetailsModal();
+      
+      // Update last performed date
+      const updatedWorkout = {
+        ...workout,
+        lastPerformed: new Date().toISOString()
+      };
+      
+      // Update in the workouts array
+      const index = workouts.value.findIndex(w => w.id === workout.id);
+      if (index !== -1) {
+        workouts.value[index] = updatedWorkout;
+        saveWorkouts();
       }
+
+      // Show a toast message
+      toastController.create({
+        message: `Starting workout: ${workout.name}`,
+        duration: 2000,
+        position: 'bottom',
+        color: 'primary'
+      }).then(toast => toast.present());
     };
 
     // Load workouts when the component mounts
@@ -357,7 +633,7 @@ export default defineComponent({
     });
 
     return {
-      exercises,
+      exercisesData,
       isWorkoutCreationModalOpen,
       isAddExercisesModalOpen,
       isWorkoutDetailsModalOpen,
@@ -365,43 +641,92 @@ export default defineComponent({
       popoverEvent,
       newWorkoutName,
       selectedExercises,
+      tempSelectedExercises,
       workouts,
       selectedWorkout,
+      exerciseSearchTerm,
+      filteredExercises,
+      canSaveWorkout,
+      formatTime,
       isExerciseSelected,
       toggleExerciseSelection,
+      addSet,
+      removeExercise,
       openWorkoutCreationModal,
       closeWorkoutCreationModal,
       openAddExercisesModal,
       closeAddExercisesModal,
-      addSelectedExercises,
+      confirmSelectedExercises,
       openWorkoutDetailsModal,
       closeWorkoutDetailsModal,
       openWorkoutOptionsPopover,
       closeWorkoutOptionsPopover,
-      viewWorkoutDetails,
+      editWorkout,
+      duplicateWorkout,
       deleteWorkout,
       saveNewWorkout,
+      startWorkout,
+      // Icons
       closeOutline,
       checkmarkOutline,
-      informationCircleOutline,
+      ellipsisHorizontal,
+      ellipsisVertical,
+      createOutline,
+      trashOutline,
+      copyOutline,
+      settingsOutline,
+      lockClosedOutline,
     };
   },
 });
 </script>
 
 <style scoped>
+/* General styles */
+:host {
+  --ion-background-color: #000000;
+  --ion-text-color: #ffffff;
+  --ion-border-color: #333333;
+}
+
+ion-content {
+  --background: #000000;
+}
+
+ion-toolbar {
+  --background: #000000;
+  --color: #ffffff;
+}
+
+ion-modal {
+  --background: #000000;
+}
+
+/* Create workout page */
 .create-workout-container {
   padding: 16px;
 }
 
+.create-button {
+  --color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 20px;
+  height: 46px;
+}
+
+.no-workouts-message {
+  color: #888888;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Workout cards */
 .workout-card {
-  background: transparent; /* Make the card transparent */
-  border: 1px solid #ccc; /* Add a gray border */
-  border-radius: 8px; /* Optional: Add rounded corners */
+  --background: #111111;
+  border: 1px solid #333;
+  border-radius: 8px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
 }
 
 .workout-header {
@@ -410,47 +735,118 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-ion-card-header {
-  padding-bottom: 0;
-}
-
 ion-card-title {
   font-size: 1.2rem;
-  color: #ffffff; /* Ensure text is visible */
-  margin: 0; /* Remove default margin */
+  color: #ffffff;
+  margin: 0;
+  font-weight: bold;
 }
 
 ion-card-subtitle {
   font-size: 0.9rem;
-  color: #666; /* Ensure text is visible */
+  color: #777777;
 }
 
-ion-card-content {
-  padding-top: 0;
-}
-
-ion-button {
-  margin: 0; /* Remove default margin */
-}
-
-/* Custom styles for the popover */
-.custom-popover {
-  --width: 150px; /* Set the width of the popover */
-  --height: auto; /* Let the height adjust to content */
-}
-
-.custom-popover ion-content {
-  --padding-top: 8px; /* Reduce top padding */
-  --padding-bottom: 8px; /* Reduce bottom padding */
-}
-
-.custom-popover ion-list {
-  padding: 0; /* Remove default padding */
-}
-
-.custom-popover ion-item {
-  --padding-start: 16px; /* Adjust item padding */
+/* Modal styles */
+.workout-modal ion-content, 
+.exercises-modal ion-content, 
+.details-modal ion-content {
+  --padding-start: 16px;
   --padding-end: 16px;
-  --min-height: 40px; /* Reduce item height */
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+}
+
+.workout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.name-input {
+  --background: transparent;
+  --border-style: none;
+  font-size: 24px;
+}
+
+.template-name {
+  font-size: 24px;
+  --color: #ffffff;
+  font-weight: bold;
+}
+
+.add-exercise-btn {
+  --background: transparent;
+  --color: #347ad6;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 10px 0;
+}
+
+/* Exercise list */
+.exercises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.exercise-item {
+  --background: transparent;
+  margin-bottom: 5px;
+}
+
+.exercise-header {
+  --background: transparent;
+  --border-style: none;
+}
+
+.exercise-header h2 {
+  color: #347ad6;
+  font-weight: bold;
+}
+
+.exercise-header p {
+  color: #777777;
+  font-size: 14px;
+}
+
+/* Sets container */
+.sets-container {
+  background: #111111;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+.sets-header {
+  display: flex;
+  font-size: 12px;
+  color: #777777;
+  font-weight: bold;
+  padding: 5px 0;
+  margin-bottom: 10px;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.set-col {
+  width: 15%;
+  text-align: center;
+}
+
+.previous-col {
+  width: 20%;
+  text-align: center;
+  color: #555;
+}
+
+.weight-col {
+  width: 25%;
+  text-align: center;
 }
 </style>
