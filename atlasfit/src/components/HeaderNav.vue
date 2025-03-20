@@ -1,5 +1,5 @@
 <template>
-  <ion-header>
+  <ion-header v-if="!$route.meta.hideGlobalHeader">
     <ion-toolbar class="custom-header">
       <ion-buttons slot="end">
         <ion-button @click="goToSettings">

@@ -114,14 +114,12 @@
               </div>
             </div>
 
-            <!-- Rest timer after each set (except the last one) -->
-            <div v-if="setIndex < exercise.sets.length - 1" class="rest-timer-between-sets">
-              <div class="rest-label">Rest after set {{ setIndex + 1 }}:</div>
+            <!-- Rest timer after each set  -->
+            <div v-if="setIndex < exercise.sets.length" class="rest-timer-between-sets">
               <ion-range v-model="set.restTime" min="0" max="300" step="5" class="rest-slider">
                 <div slot="start">0:00</div>
-                <div slot="end">5:00</div>
+                <div class="timer-display" slot="end">{{ formatTime(set.restTime) }}</div>
               </ion-range>
-              <div class="timer-display">{{ formatTime(set.restTime) }}</div>
             </div>
           </div>
 
@@ -131,17 +129,7 @@
         </div>
       </div>
 
-      <!-- Rest time between exercises -->
-      <div v-for="(exercise, index) in selectedExercises" :key="`exercise-rest-${index}`">
-        <div v-if="index < selectedExercises.length - 1" class="rest-between-exercises">
-          <div class="exercise-rest-label">Rest between {{ exercise.name }} and {{ selectedExercises[index + 1].name }}:</div>
-          <ion-range v-model="exercise.restBetweenExercises" min="0" max="300" step="5" class="rest-slider">
-            <div slot="start">0:00</div>
-            <div slot="end">5:00</div>
-          </ion-range>
-          <div class="timer-display">{{ formatTime(exercise.restBetweenExercises) }}</div>
-        </div>
-      </div>
+      
     </div>
   </div>
 </ion-content>
@@ -251,6 +239,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -360,6 +349,7 @@ export default defineComponent({
     const exerciseSearchTerm = ref('');
     let nextWorkoutId = 1;
     const editingWorkoutId = ref(null);
+    const router = useRouter();
 
     // Filter exercises based on search term
     const filteredExercises = computed(() => {
@@ -599,33 +589,28 @@ export default defineComponent({
   }
 };
 
-    // Start workout
-    const startWorkout = (workout: Workout) => {
-      // In a real app, this would navigate to the workout session screen
-      // For now, we'll just show a message
-      closeWorkoutDetailsModal();
-      
-      // Update last performed date
-      const updatedWorkout = {
-        ...workout,
-        lastPerformed: new Date().toISOString()
-      };
-      
-      // Update in the workouts array
-      const index = workouts.value.findIndex(w => w.id === workout.id);
-      if (index !== -1) {
-        workouts.value[index] = updatedWorkout;
-        saveWorkouts();
-      }
 
-      // Show a toast message
-      toastController.create({
-        message: `Starting workout: ${workout.name}`,
-        duration: 2000,
-        position: 'bottom',
-        color: 'primary'
-      }).then(toast => toast.present());
-    };
+const startWorkout = (workout: Workout) => {
+  closeWorkoutDetailsModal();
+  // Update last performed date
+  const updatedWorkout = {
+    ...workout,
+    lastPerformed: new Date().toISOString()
+  };
+  
+  // Update in the workouts array
+  const index = workouts.value.findIndex(w => w.id === workout.id);
+  if (index !== -1) {
+    workouts.value[index] = updatedWorkout;
+    saveWorkouts();
+  }
+
+  // Navigate to the workout execution page
+  router.push({
+    name: 'WorkoutExecution',
+    params: { workoutId: workout.id.toString() }
+  });
+};
 
     // Load workouts when the component mounts
     onMounted(() => {
