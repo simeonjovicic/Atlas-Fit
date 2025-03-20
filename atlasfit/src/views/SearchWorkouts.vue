@@ -132,6 +132,7 @@
         </div>
       </ion-content>
     </ion-modal>
+    <div class="navbar-spacer"></div>
   </ion-page>
 </template>
 
@@ -449,6 +450,10 @@ export default {
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.navbar-spacer {
+  height: 56px; /* Adjust this value to match your navbar's height */
 }
 
 .recommendation-item:last-child {

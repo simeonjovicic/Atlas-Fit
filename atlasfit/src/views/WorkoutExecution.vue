@@ -387,10 +387,10 @@ const endWorkout = () => {
       name: workout.value.name,
       completedAt: endTime.toISOString(),
       duration: durationFormatted,
-      exercises: workout.value.exercises.map(exercise => {
+      exercises: workout.value.exercises.map((exercise, exerciseIndex) => {
         // Count completed sets
-        const completedSetsCount = exercise.sets.filter((_, index) => {
-          const key = `${currentExerciseIndex.value}-${index}`;
+        const completedSetsCount = exercise.sets.filter((_, setIndex) => {
+          const key = `${exerciseIndex}-${setIndex}`;
           return completedSets.value[key] === true;
         }).length;
         
@@ -448,7 +448,7 @@ const endWorkout = () => {
   }
   
   // Navigate back to workout list
-  router.push('/home');
+  router.push('/history');
 };
   
       // Component lifecycle hooks
