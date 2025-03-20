@@ -1,5 +1,5 @@
 <template>
-  <ion-header v-if="!$route.meta.hideGlobalHeader">
+  <ion-header v-if="!$route.meta.hideGlobalHeader" class="custom-header">
     <ion-toolbar class="custom-header">
       <ion-buttons slot="end">
         <ion-button @click="goToSettings">
@@ -22,7 +22,7 @@ export default defineComponent({
     const router = useRouter();
 
     const goToSettings = () => {
-      router.push("/settings"); 
+      router.push("/settings");
     };
 
     return { settingsOutline, goToSettings };
@@ -34,5 +34,9 @@ export default defineComponent({
 .custom-header {
   --ion-toolbar-background: transparent; /* Makes toolbar transparent */
   box-shadow: none; /* Removes shadow */
+  height: calc(56px + env(safe-area-inset-top)); /* Adjust height dynamically */
+  padding-top: env(safe-area-inset-top); /* Ensures status bar is considered */
 }
+
+
 </style>
