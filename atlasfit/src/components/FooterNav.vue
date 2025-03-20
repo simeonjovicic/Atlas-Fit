@@ -1,5 +1,5 @@
 <template>
-  <ion-footer>
+  <ion-footer v-if="!$route.meta.hideGlobalHeader">
     <ion-toolbar>
       <ion-grid>
         <ion-row class="ion-justify-content-around">
@@ -9,7 +9,7 @@
             </ion-button>
           </ion-col>
           <ion-col class="ion-text-center">
-            <ion-button :fill="isActive('/statistic')" :color="getColor('/statistic')" @click="$router.push('/statistic')">
+            <ion-button :fill="isActive('/history')" :color="getColor('/history')" @click="$router.push('/history')">
               <ion-icon :icon="statsChartOutline"></ion-icon>
             </ion-button>
           </ion-col>

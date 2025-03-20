@@ -373,24 +373,83 @@
       };
   
       // End workout
-      const endWorkout = () => {
-        if (workout.value) {
-          // Save completion time
-          workout.value.lastPerformed = new Date().toISOString();
-          saveWorkoutProgress();
-          
-          // Show completion toast
-          toastController.create({
-            message: 'Workout completed!',
-            duration: 2000,
-            position: 'bottom',
-            color: 'success'
-          }).then(toast => toast.present());
-        }
+      // End workout
+const endWorkout = () => {
+  if (workout.value) {
+    // Calculate total workout duration
+    const endTime = new Date();
+    const duration = Math.floor((endTime.getTime() - startTime.value.getTime()) / 1000);
+    const durationFormatted = formatTime(duration);
+    
+    // Create a workout history entry
+    const completedWorkout = {
+      id: workout.value.id,
+      name: workout.value.name,
+      completedAt: endTime.toISOString(),
+      duration: durationFormatted,
+      exercises: workout.value.exercises.map(exercise => {
+        // Count completed sets
+        const completedSetsCount = exercise.sets.filter((_, index) => {
+          const key = `${currentExerciseIndex.value}-${index}`;
+          return completedSets.value[key] === true;
+        }).length;
         
-        // Navigate back to workout list
-        router.push('/workouts');
-      };
+        // Find best set (highest weight × reps)
+        let bestSet = '';
+        let bestSetValue = 0;
+        
+        exercise.sets.forEach(set => {
+          const setValue = set.weight * set.reps;
+          if (setValue > bestSetValue) {
+            bestSetValue = setValue;
+            bestSet = `${set.weight} kg × ${set.reps}`;
+          }
+        });
+        
+        return {
+          name: exercise.name,
+          completedSets: completedSetsCount,
+          sets: exercise.sets.map(set => ({
+            reps: set.reps,
+            weight: set.weight
+          })),
+          bestSet: bestSet
+        };
+      }),
+      totalWeight: workout.value.exercises.reduce((total, exercise) => {
+        return total + exercise.sets.reduce((setTotal, set) => {
+          return setTotal + (set.weight * set.reps);
+        }, 0);
+      }, 0)
+    };
+    
+    // Save to localStorage
+    const savedCompletedWorkouts = localStorage.getItem('completedWorkouts');
+    let completedWorkouts = [];
+    
+    if (savedCompletedWorkouts) {
+      completedWorkouts = JSON.parse(savedCompletedWorkouts);
+    }
+    
+    completedWorkouts.push(completedWorkout);
+    localStorage.setItem('completedWorkouts', JSON.stringify(completedWorkouts));
+    
+    // Also update the regular workout data
+    workout.value.lastPerformed = endTime.toISOString();
+    saveWorkoutProgress();
+    
+    // Show completion toast
+    toastController.create({
+      message: 'Workout completed!',
+      duration: 2000,
+      position: 'bottom',
+      color: 'success'
+    }).then(toast => toast.present());
+  }
+  
+  // Navigate back to workout list
+  router.push('/home');
+};
   
       // Component lifecycle hooks
       onMounted(() => {
@@ -457,7 +516,7 @@
   .exercise-name {
     font-size: 24px;
     font-weight: bold;
-    color: #ff9500;
+    color: #347ad6;
     margin: 0;
   }
   
@@ -481,7 +540,7 @@
   }
   
   .skip-button {
-    --color: #ff9500;
+    --color: #347ad6;
   }
   
   /* Sets container */
@@ -554,7 +613,7 @@
   }
   
   .active-button {
-    --color: #ff9500;
+    --color: #347ad6;
   }
   
   .completed-set {
@@ -591,7 +650,7 @@
   
   .add-set-btn {
     --background: transparent;
-    --color: #ff9500;
+    --color: #347ad6;
     font-weight: bold;
     margin: 10px 0;
   }

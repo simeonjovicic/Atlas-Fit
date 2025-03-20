@@ -5,6 +5,7 @@ import CreateWorkouts from '../views/CreateWorkouts.vue';
 import SearchWorkouts from '../views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
 import ProfileView from '@/views/ProfileView.vue';
+import WorkoutHistory from '@/views/WorkoutHistory.vue';
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -41,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile',
     name: 'ProfileView',
     component: ProfileView
+  },
+  {
+    path: '/history',
+    name: 'WorkoutHistory',
+    component: WorkoutHistory
   }
 ]
 
