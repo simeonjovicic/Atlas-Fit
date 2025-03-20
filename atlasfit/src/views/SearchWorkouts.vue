@@ -249,7 +249,7 @@ export default {
 
       // Here you would typically save the updated state to localStorage or a database
       // For example:
-      // localStorage.setItem('savedExercises', JSON.stringify(exercises.value));
+      localStorage.setItem('savedExercises', JSON.stringify(exercises.value));
     };
 
     const filterExercises = () => {
@@ -258,14 +258,14 @@ export default {
     };
 
     // Optional: Load saved state from localStorage on component creation
-    // const loadSavedState = () => {
-    //   const savedData = localStorage.getItem('savedExercises');
-    //   if (savedData) {
-    //     exercises.value = JSON.parse(savedData);
-    //   }
-    // };
-    // 
-    // loadSavedState();
+    const loadSavedState = () => {
+      const savedData = localStorage.getItem('savedExercises');
+      if (savedData) {
+        exercises.value = JSON.parse(savedData);
+      }
+     };
+     
+    loadSavedState();
 
     return { 
       searchQuery, 
