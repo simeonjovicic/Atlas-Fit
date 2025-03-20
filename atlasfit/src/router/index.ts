@@ -4,6 +4,7 @@ import HomePage from '../views/HomePage.vue'
 import CreateWorkouts from '../views/CreateWorkouts.vue';
 import SearchWorkouts from '../views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
+import ProfileView from '@/views/ProfileView.vue';
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -35,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       hideGlobalHeader: true // A flag your layout can check
     }
+  },
+  {
+    path: '/profile',
+    name: 'ProfileView',
+    component: ProfileView
   }
 ]
 
