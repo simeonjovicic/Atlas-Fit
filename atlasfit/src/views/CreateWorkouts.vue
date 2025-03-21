@@ -97,9 +97,8 @@
             <div class="lock-col"></div>
           </div>
 
-          <!-- Sets with rest timers in between -->
+          <!-- Sets rows -->
           <div v-for="(set, setIndex) in exercise.sets" :key="`${index}-${setIndex}`">
-            <!-- Set row -->
             <div class="set-row">
               <div class="set-col">{{ setIndex + 1 }}</div>
               <div class="previous-col">—</div>
@@ -113,14 +112,15 @@
                 <ion-icon :icon="lockClosedOutline" v-if="set.locked"></ion-icon>
               </div>
             </div>
+          </div>
 
-            <!-- Rest timer after each set  -->
-            <div v-if="setIndex < exercise.sets.length" class="rest-timer-between-sets">
-              <ion-range v-model="set.restTime" min="0" max="300" step="5" class="rest-slider">
-                <div slot="start">0:00</div>
-                <div class="timer-display" slot="end">{{ formatTime(set.restTime) }}</div>
-              </ion-range>
-            </div>
+          <!-- Single Rest Timer for the entire exercise -->
+          <div class="rest-timer-container">
+            <div class="rest-timer-label">Rest between sets:</div>
+            <ion-range v-model="exercise.restTime" min="0" max="300" step="5" class="rest-slider">
+              <div slot="start">0:00</div>
+              <div class="timer-display" slot="end">{{ formatTime(exercise.restTime) }}</div>
+            </ion-range>
           </div>
 
           <ion-button expand="block" class="add-set-btn" @click="addSet(exercise)">
@@ -128,8 +128,6 @@
           </ion-button>
         </div>
       </div>
-
-      
     </div>
   </div>
 </ion-content>
@@ -197,7 +195,7 @@
                     <div v-for="(set, setIndex) in exercise.sets" :key="`${index}-${setIndex}`" class="set-detail">
                       <span>Set {{ setIndex + 1 }}: {{ set.reps }} reps × {{ set.weight || 0 }}kg</span>
                     </div>
-                    <div class="rest-detail">Rest: {{ formatTime(exercise.restTime) }}</div>
+                    <div class="rest-detail">Rest: {{ formatTime(exercise.restTime || 60) }}</div>
                   </div>
                 </ion-label>
               </ion-item>
@@ -286,6 +284,7 @@ import exercisesData from '@/resources/exercises.json';
 interface Set {
   reps: number;
   weight: number;
+  locked?: boolean;
 }
 
 interface Exercise {
@@ -402,11 +401,11 @@ export default defineComponent({
       if (isExerciseSelected(exercise)) {
         tempSelectedExercises.value = tempSelectedExercises.value.filter((e) => e.name !== exercise.name);
       } else {
-        // Create a new exercise with default values
+        // Create a new exercise with default values and a single rest timer for the exercise
         tempSelectedExercises.value.push({
           ...exercise,
           sets: [{ reps: 10, weight: 0 }],
-          restTime: 60, // Default rest time: 60 seconds
+          restTime: 60 // Default rest time in seconds (1 minute)
         });
       }
     };
@@ -436,11 +435,11 @@ export default defineComponent({
 
     // Close the workout creation modal
     const closeWorkoutCreationModal = () => {
-  isWorkoutCreationModalOpen.value = false;
-  newWorkoutName.value = '';
-  selectedExercises.value = [];
-  editingWorkoutId.value = null; // Reset the editing ID when closing
-};
+      isWorkoutCreationModalOpen.value = false;
+      newWorkoutName.value = '';
+      selectedExercises.value = [];
+      editingWorkoutId.value = null; // Reset the editing ID when closing
+    };
 
     // Open the add exercises modal
     const openAddExercisesModal = () => {
@@ -488,20 +487,25 @@ export default defineComponent({
 
     // Edit workout
     const editWorkout = async () => {
-  if (selectedWorkout.value) {
-    // Store the workout ID being edited
-    editingWorkoutId.value = selectedWorkout.value.id;
-    
-    // Set form values with the selected workout data
-    newWorkoutName.value = selectedWorkout.value.name;
-    selectedExercises.value = JSON.parse(JSON.stringify(selectedWorkout.value.exercises));
-    
-    closeWorkoutOptionsPopover();
-    isWorkoutCreationModalOpen.value = true;
-    
-    // No longer removing the workout here
-  }
-};
+      if (selectedWorkout.value) {
+        // Store the workout ID being edited
+        editingWorkoutId.value = selectedWorkout.value.id;
+        
+        // Set form values with the selected workout data
+        newWorkoutName.value = selectedWorkout.value.name;
+        selectedExercises.value = JSON.parse(JSON.stringify(selectedWorkout.value.exercises));
+        
+        // Make sure each exercise has the restTime property
+        selectedExercises.value.forEach(exercise => {
+          if (exercise.restTime === undefined) {
+            exercise.restTime = 60; // Default to 60 seconds if not set
+          }
+        });
+        
+        closeWorkoutOptionsPopover();
+        isWorkoutCreationModalOpen.value = true;
+      }
+    };
 
     // Duplicate workout
     const duplicateWorkout = async () => {
@@ -511,6 +515,14 @@ export default defineComponent({
           name: `${selectedWorkout.value.name} (Copy)`,
           exercises: JSON.parse(JSON.stringify(selectedWorkout.value.exercises)),
         };
+        
+        // Ensure each exercise has the restTime property
+        newWorkout.exercises.forEach(exercise => {
+          if (exercise.restTime === undefined) {
+            exercise.restTime = 60; // Default to 60 seconds if not set
+          }
+        });
+        
         workouts.value.push(newWorkout);
         saveWorkouts();
         closeWorkoutOptionsPopover();
@@ -553,64 +565,70 @@ export default defineComponent({
 
     // Save the new workout
     const saveNewWorkout = async () => {
-  if (newWorkoutName.value.trim() && selectedExercises.value.length > 0) {
-    if (editingWorkoutId.value) {
-      // Update existing workout
-      workouts.value = workouts.value.filter(w => w.id !== editingWorkoutId.value);
-      
+      if (newWorkoutName.value.trim() && selectedExercises.value.length > 0) {
+        // Ensure each exercise has the restTime property
+        selectedExercises.value.forEach(exercise => {
+          if (exercise.restTime === undefined) {
+            exercise.restTime = 60; // Default to 60 seconds if not set
+          }
+        });
+        
+        if (editingWorkoutId.value) {
+          // Update existing workout
+          workouts.value = workouts.value.filter(w => w.id !== editingWorkoutId.value);
+          
+          const updatedWorkout = {
+            id: editingWorkoutId.value,
+            name: newWorkoutName.value,
+            exercises: selectedExercises.value,
+          };
+          
+          workouts.value.push(updatedWorkout);
+          editingWorkoutId.value = null; // Reset the editing ID
+        } else {
+          // Create new workout
+          const newWorkout = {
+            id: nextWorkoutId++,
+            name: newWorkoutName.value,
+            exercises: selectedExercises.value,
+          };
+          workouts.value.push(newWorkout);
+        }
+        
+        saveWorkouts();
+        closeWorkoutCreationModal();
+        
+        const toast = await toastController.create({
+          message: 'Workout saved successfully!',
+          duration: 2000,
+          position: 'bottom',
+          color: 'success'
+        });
+        toast.present();
+      }
+    };
+
+    const startWorkout = (workout: Workout) => {
+      closeWorkoutDetailsModal();
+      // Update last performed date
       const updatedWorkout = {
-        id: editingWorkoutId.value,
-        name: newWorkoutName.value,
-        exercises: selectedExercises.value,
+        ...workout,
+        lastPerformed: new Date().toISOString()
       };
       
-      workouts.value.push(updatedWorkout);
-      editingWorkoutId.value = null; // Reset the editing ID
-    } else {
-      // Create new workout
-      const newWorkout = {
-        id: nextWorkoutId++,
-        name: newWorkoutName.value,
-        exercises: selectedExercises.value,
-      };
-      workouts.value.push(newWorkout);
-    }
-    
-    saveWorkouts();
-    closeWorkoutCreationModal();
-    
-    const toast = await toastController.create({
-      message: 'Workout saved successfully!',
-      duration: 2000,
-      position: 'bottom',
-      color: 'success'
-    });
-    toast.present();
-  }
-};
+      // Update in the workouts array
+      const index = workouts.value.findIndex(w => w.id === workout.id);
+      if (index !== -1) {
+        workouts.value[index] = updatedWorkout;
+        saveWorkouts();
+      }
 
-
-const startWorkout = (workout: Workout) => {
-  closeWorkoutDetailsModal();
-  // Update last performed date
-  const updatedWorkout = {
-    ...workout,
-    lastPerformed: new Date().toISOString()
-  };
-  
-  // Update in the workouts array
-  const index = workouts.value.findIndex(w => w.id === workout.id);
-  if (index !== -1) {
-    workouts.value[index] = updatedWorkout;
-    saveWorkouts();
-  }
-
-  // Navigate to the workout execution page
-  router.push({
-    name: 'WorkoutExecution',
-    params: { workoutId: workout.id.toString() }
-  });
-};
+      // Navigate to the workout execution page
+      router.push({
+        name: 'WorkoutExecution',
+        params: { workoutId: workout.id.toString() }
+      });
+    };
 
     // Load workouts when the component mounts
     onMounted(() => {
@@ -667,6 +685,281 @@ const startWorkout = (workout: Workout) => {
 </script>
 
 <style scoped>
+/* General styles */
+:host {
+  --ion-background-color: #000000;
+  --ion-text-color: #ffffff;
+  --ion-border-color: #333333;
+}
+
+ion-content {
+  --background: #000000;
+}
+
+ion-toolbar {
+  --background: #000000;
+  --color: #ffffff;
+}
+
+ion-modal {
+  --background: #000000;
+}
+
+/* Create workout page */
+.create-workout-container {
+  padding: 16px;
+}
+
+.create-button {
+  --color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 20px;
+  height: 46px;
+}
+
+.no-workouts-message {
+  color: #888888;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Workout cards */
+.workout-card {
+  --background: #111111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.workout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+ion-card-title {
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: bold;
+}
+
+ion-card-subtitle {
+  font-size: 0.9rem;
+  color: #777777;
+}
+
+/* Modal styles */
+.workout-modal ion-content, 
+.exercises-modal ion-content, 
+.details-modal ion-content {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+}
+
+.workout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.name-input {
+  --background: transparent;
+  --border-style: none;
+  font-size: 24px;
+}
+
+.template-name {
+  font-size: 24px;
+  --color: #ffffff;
+  font-weight: bold;
+}
+
+.add-exercise-btn {
+  --background: transparent;
+  --color: #347ad6;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 10px 0;
+}
+
+/* Exercise list */
+.exercises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.exercise-item {
+  --background: transparent;
+  margin-bottom: 5px;
+}
+
+.exercise-header {
+  --background: transparent;
+  --border-style: none;
+}
+
+.exercise-header h2 {
+  color: #347ad6;
+  font-weight: bold;
+}
+
+.exercise-header p {
+  color: #777777;
+  font-size: 14px;
+}
+
+/* Sets container */
+.sets-container {
+  background: #111111;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+.sets-header {
+  display: flex;
+  font-size: 12px;
+  color: #777777;
+  font-weight: bold;
+  padding: 5px 0;
+  margin-bottom: 10px;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.set-col {
+  width: 15%;
+  text-align: center;
+}
+
+.previous-col {
+  width: 20%;
+  text-align: center;
+  color: #555;
+}
+
+.weight-col {
+  width: 25%;
+  text-align: center;
+}
+
+.reps-col {
+  width: 25%;
+  text-align: center;
+}
+
+.lock-col {
+  width: 15%;
+  text-align: center;
+}
+
+.weight-input, .reps-input {
+  --background: #222;
+  --color: #fff;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  --border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.add-set-btn {
+  --background: transparent;
+  --color: #347ad6;
+  font-size: 14px;
+  height: 36px;
+  margin-top: 15px;
+}
+
+/* Rest timer */
+.rest-timer-container {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.rest-timer-label {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.timer-display {
+  font-family: monospace;
+  color: #347ad6;
+  font-weight: bold;
+}
+
+/* Details modal */
+.workout-details {
+  padding: 10px;
+}
+
+.workout-name {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.exercise-detail {
+  --background: #111;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.sets-details {
+  margin-top: 10px;
+}
+
+.set-detail {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.rest-detail {
+  font-size: 14px;
+  color: #347ad6;
+  margin-top: 8px;
+}
+
+.start-workout-btn {
+  margin-top: 20px;
+  --background: #347ad6;
+  --color: #fff;
+  font-weight: bold;
+}
+
+/* Exercise search */
+.exercise-search {
+  --background: #111;
+  --color: #fff;
+  --placeholder-color: #777;
+  margin-bottom: 15px;
+}
+
+/* Options popover */
+.options-popover ion-content {
+  --background: #111;
+}
+
+.options-popover ion-item {
+  --background: transparent;
+  --color: #fff;
+}
+
 /* General styles */
 :host {
   --ion-background-color: #000000;
