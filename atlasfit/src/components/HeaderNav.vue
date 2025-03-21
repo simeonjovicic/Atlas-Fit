@@ -34,9 +34,10 @@ export default defineComponent({
 .custom-header {
   --ion-toolbar-background: transparent; /* Makes toolbar transparent */
   box-shadow: none; /* Removes shadow */
-  height: calc(56px + env(safe-area-inset-top)); /* Adjust height dynamically */
-  padding-top: env(safe-area-inset-top); /* Ensures status bar is considered */
+ 
 }
-
+.toolbar-ios {
+  padding-top: env(safe-area-inset-top);
+}
 
 </style>

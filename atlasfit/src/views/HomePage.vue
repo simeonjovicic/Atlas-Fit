@@ -7,6 +7,12 @@
     </ion-header>
 
     <ion-content :scroll-y="true">
+      <ion-refresher slot="fixed" @ionRefresh="refreshHistory($event)">
+        <ion-refresher-content
+          pullingIcon="arrow-down"
+          refreshingSpinner="crescent">
+        </ion-refresher-content>
+      </ion-refresher>
       <div class="dashboard-container">
         <div class="stats-card">
           <h2>Deine Statistik</h2>
@@ -38,7 +44,7 @@
           
           <div class="graph-container">
             <div class="graph-y-axis">
-              <div v-for="n in 6" :key="n" class="y-label">{{ 6-n }}</div>
+              <div v-for="n in 6" :key="n" class="y-label">{{ 6 - n }}</div>
             </div>
             <div class="graph-content">
               <div v-for="(week, index) in displayedWeeks" :key="index" class="graph-bar-container">
@@ -84,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue';
+import { defineComponent, ref, computed, onMounted, watch, onActivated } from 'vue';
 import { 
   IonPage, 
   IonHeader, 
@@ -141,9 +147,28 @@ export default defineComponent({
     const selectedPeriod = ref('month');
     
     const loadCompletedWorkouts = () => {
-      const savedWorkouts = localStorage.getItem('completedWorkouts');
-      if (savedWorkouts) {
-        completedWorkouts.value = JSON.parse(savedWorkouts);
+      try {
+        const savedWorkouts = localStorage.getItem('completedWorkouts');
+        if (savedWorkouts) {
+          completedWorkouts.value = JSON.parse(savedWorkouts);
+        }
+      } catch (error) {
+        console.error('Failed to load workouts:', error);
+      }
+    };
+
+    const refreshHistory = (event: CustomEvent) => {
+      try {
+        loadCompletedWorkouts();
+      } catch (error) {
+        console.error('Failed to refresh data:', error);
+      } finally {
+        // Always complete the refresher, even if there's an error
+        if (event && event.target) {
+          setTimeout(() => {
+            event.target.complete();
+          }, 500); // Simulate a delay for better UX
+        }
       }
     };
     
@@ -185,17 +210,14 @@ export default defineComponent({
       
       switch (periodType) {
         case 'month':
-          // Get approx 4 weeks
           startDate = new Date(now);
           startDate.setDate(now.getDate() - 28);
           break;
         case '3months':
-          // Get approx 12 weeks
           startDate = new Date(now);
           startDate.setDate(now.getDate() - 84);
           break;
         case 'year':
-          // Get ~52 weeks, but we'll sample roughly 12 for display
           startDate = new Date(now);
           startDate.setFullYear(now.getFullYear() - 1);
           break;
@@ -204,19 +226,16 @@ export default defineComponent({
           startDate.setDate(now.getDate() - 28);
       }
       
-      // Get the Monday of the week containing startDate
       const startMonday = new Date(startDate);
       startMonday.setDate(startMonday.getDate() - (startMonday.getDay() - 1 + 7) % 7);
       startMonday.setHours(0, 0, 0, 0);
       
-      // Get the Monday of the week containing now
       const endMonday = new Date(now);
       endMonday.setDate(endMonday.getDate() - (endMonday.getDay() - 1 + 7) % 7);
       endMonday.setHours(0, 0, 0, 0);
       
       let numWeeks = Math.ceil((endMonday.getTime() - startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
       
-      // If showing a year, sample approximately 12 weeks
       const skipWeeks = periodType === 'year' ? Math.floor(numWeeks / 12) : 1;
       
       let weekStart = new Date(startMonday);
@@ -224,7 +243,6 @@ export default defineComponent({
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
         
-        // Format a simple date string for the label (e.g., "22.3.")
         const label = `${weekStart.getDate()}.${weekStart.getMonth() + 1}.`;
         
         weeks.push({
@@ -234,18 +252,15 @@ export default defineComponent({
           count: 0
         });
         
-        // Move to the next week we want to display
         weekStart.setDate(weekStart.getDate() + 7 * skipWeeks);
       }
       
-      // Take the last 8 weeks if we have more
       return weeks.slice(-8);
     };
     
     const displayedWeeks = computed(() => {
       const weeks = getWeeksInPeriod(selectedPeriod.value);
       
-      // Calculate the count of workouts for each week
       completedWorkouts.value.forEach(workout => {
         const workoutDate = new Date(workout.completedAt);
         
@@ -261,15 +276,12 @@ export default defineComponent({
     });
     
     const calculateBarHeight = (count: number) => {
-  const maxHeight = 100; // Max height in percentage
-  const maxCount = 6; // Maximum number on the Y-axis
-  
-  // Cap the count at maxCount to prevent bars from exceeding the graph area
-  const cappedCount = Math.min(count, maxCount);
-  
-  const height = (cappedCount / maxCount) * maxHeight;
-  return `${height}%`;
-};
+      const maxHeight = 100; // Max height in percentage
+      const maxCount = 6; // Maximum number on the Y-axis
+      const cappedCount = Math.min(count, maxCount);
+      const height = (cappedCount / maxCount) * maxHeight;
+      return `${height}%`;
+    };
     
     const formatDate = (dateString: string) => {
       const date = new Date(dateString);
@@ -283,6 +295,10 @@ export default defineComponent({
     onMounted(() => {
       loadCompletedWorkouts();
     });
+
+    onActivated(() => {
+      refreshHistory(new CustomEvent('ionRefresh')); // Simulate a refresh event
+    });
     
     return {
       totalWorkouts,
@@ -294,11 +310,13 @@ export default defineComponent({
       calculateBarHeight,
       formatDate,
       timeOutline,
-      barbellOutline
+      barbellOutline,
+      refreshHistory
     };
   }
 });
 </script>
+
 
 <style scoped>
 .dashboard-container {

@@ -7,6 +7,13 @@
     </ion-header>
 
     <ion-content :scroll-y="true">
+      <ion-refresher slot="fixed" @ionRefresh="refreshHistory($event)">
+        <ion-refresher-content
+          pullingIcon="arrow-down"
+          refreshingSpinner="crescent">
+        </ion-refresher-content>
+      </ion-refresher>
+      
       <div class="history-container">
         <div v-for="(monthData, month) in groupedWorkouts" :key="month" class="month-section">
           <div class="month-header">
@@ -14,7 +21,7 @@
             <span class="workout-count">{{ monthData.workouts.length }} Workouts</span>
           </div>
           
-          <div v-for="workout in monthData.workouts" :key="workout.id" class="workout-card">
+          <div v-for="workout in monthData.workouts" :key="workout.id + workout.completedAt" class="workout-card">
             <div class="workout-header">
               <h3>{{ workout.name }}</h3>
               <p>{{ formatDate(workout.completedAt) }}</p>
@@ -55,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
+import { defineComponent, ref, computed, onMounted, onActivated } from 'vue';
 import { 
   IonPage, 
   IonHeader, 
@@ -68,7 +75,9 @@ import {
   IonTabBar,
   IonTabButton,
   IonLabel,
-  IonRouterOutlet
+  IonRouterOutlet,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/vue';
 import { 
   timeOutline, 
@@ -117,7 +126,9 @@ export default defineComponent({
     IonTabBar,
     IonTabButton,
     IonLabel,
-    IonRouterOutlet
+    IonRouterOutlet,
+    IonRefresher,
+    IonRefresherContent
   },
   setup() {
     const completedWorkouts = ref<CompletedWorkout[]>([]);
@@ -126,6 +137,15 @@ export default defineComponent({
       const savedWorkouts = localStorage.getItem('completedWorkouts');
       if (savedWorkouts) {
         completedWorkouts.value = JSON.parse(savedWorkouts);
+      }
+    };
+    
+    const refreshHistory = (event?: CustomEvent) => {
+      loadCompletedWorkouts();
+      if (event) {
+        setTimeout(() => {
+          event.target.complete();
+        }, 500);
       }
     };
     
@@ -170,9 +190,15 @@ export default defineComponent({
       loadCompletedWorkouts();
     });
     
+    // Add this hook to reload data when component is activated
+    onActivated(() => {
+      refreshHistory();
+    });
+    
     return {
       groupedWorkouts,
       formatDate,
+      refreshHistory,
       timeOutline,
       barbellOutline,
       personOutline,

@@ -710,6 +710,10 @@ ion-modal {
   padding: 16px;
 }
 
+.workouts-list {
+  margin-bottom: 56px; /* Adjust based on your navbar height */
+}
+
 .create-button {
   --color: #ffffff;
   font-weight: bold;
