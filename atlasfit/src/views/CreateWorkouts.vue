@@ -3,11 +3,6 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Create Workout</ion-title>
-        <ion-buttons slot="end">
-          <ion-button>
-            <ion-icon :icon="settingsOutline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -687,22 +682,18 @@ export default defineComponent({
 <style scoped>
 /* General styles */
 :host {
-  --ion-background-color: #000000;
-  --ion-text-color: #ffffff;
-  --ion-border-color: #333333;
+  --ion-background-color: var(--ion-color-light);
+  --ion-text-color: var(--ion-color-dark);
+  --ion-border-color: var(--ion-color-medium);
 }
 
 ion-content {
-  --background: #000000;
+  --background: var(--ion-color-light);
 }
 
-ion-toolbar {
-  --background: #000000;
-  --color: #ffffff;
-}
 
 ion-modal {
-  --background: #000000;
+  --background: var(--ion-color-light);
 }
 
 /* Create workout page */
@@ -715,22 +706,22 @@ ion-modal {
 }
 
 .create-button {
-  --color: #ffffff;
+  --color: #ffffff; /* Keep button color as is */
   font-weight: bold;
   margin-bottom: 20px;
   height: 46px;
 }
 
 .no-workouts-message {
-  color: #888888;
+  color: var(--ion-color-medium);
   text-align: center;
   margin-top: 20px;
 }
 
 /* Workout cards */
 .workout-card {
-  --background: #111111;
-  border: 1px solid #333;
+  --background: var(--ion-color-light-shade);
+  border: 1px solid var(--ion-color-medium);
   border-radius: 8px;
   height: 100%;
   overflow: hidden;
@@ -744,14 +735,14 @@ ion-modal {
 
 ion-card-title {
   font-size: 1.2rem;
-  color: #ffffff;
+  color: var(--ion-color-dark);
   margin: 0;
   font-weight: bold;
 }
 
 ion-card-subtitle {
   font-size: 0.9rem;
-  color: #777777;
+  color: var(--ion-color-medium);
 }
 
 /* Modal styles */
@@ -778,13 +769,13 @@ ion-card-subtitle {
 
 .template-name {
   font-size: 24px;
-  --color: #ffffff;
+  --color: var(--ion-color-dark);
   font-weight: bold;
 }
 
 .add-exercise-btn {
   --background: transparent;
-  --color: #347ad6;
+  --color: #347ad6; /* Keep button color as is */
   font-weight: bold;
   letter-spacing: 1px;
   margin: 10px 0;
@@ -809,18 +800,18 @@ ion-card-subtitle {
 }
 
 .exercise-header h2 {
-  color: #347ad6;
+  color: #347ad6; /* Keep button color as is */
   font-weight: bold;
 }
 
 .exercise-header p {
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 14px;
 }
 
 /* Sets container */
 .sets-container {
-  background: #111111;
+  background: var(--ion-color-light-shade);
   border-radius: 8px;
   padding: 10px;
   margin-top: 5px;
@@ -829,7 +820,7 @@ ion-card-subtitle {
 .sets-header {
   display: flex;
   font-size: 12px;
-  color: #777777;
+  color: var(--ion-color-medium);
   font-weight: bold;
   padding: 5px 0;
   margin-bottom: 10px;
@@ -849,7 +840,7 @@ ion-card-subtitle {
 .previous-col {
   width: 20%;
   text-align: center;
-  color: #555;
+  color: var(--ion-color-medium);
 }
 
 .weight-col {
@@ -868,8 +859,8 @@ ion-card-subtitle {
 }
 
 .weight-input, .reps-input {
-  --background: #222;
-  --color: #fff;
+  --background: var(--ion-color-light-shade);
+  --color: var(--ion-color-dark);
   --padding-start: 8px;
   --padding-end: 8px;
   --padding-top: 4px;
@@ -881,7 +872,7 @@ ion-card-subtitle {
 
 .add-set-btn {
   --background: transparent;
-  --color: #347ad6;
+  --color: #347ad6; /* Keep button color as is */
   font-size: 14px;
   height: 36px;
   margin-top: 15px;
@@ -891,18 +882,18 @@ ion-card-subtitle {
 .rest-timer-container {
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--ion-color-medium);
 }
 
 .rest-timer-label {
   font-size: 14px;
-  color: #777;
+  color: var(--ion-color-medium);
   margin-bottom: 10px;
 }
 
 .timer-display {
   font-family: monospace;
-  color: #347ad6;
+  color: #347ad6; /* Keep button color as is */
   font-weight: bold;
 }
 
@@ -914,11 +905,11 @@ ion-card-subtitle {
 .workout-name {
   margin-bottom: 20px;
   font-size: 24px;
-  color: #fff;
+  color: var(--ion-color-dark);
 }
 
 .exercise-detail {
-  --background: #111;
+  --background: var(--ion-color-light-shade);
   border-radius: 8px;
   margin-bottom: 15px;
 }
@@ -929,206 +920,38 @@ ion-card-subtitle {
 
 .set-detail {
   font-size: 14px;
-  color: #aaa;
+  color: var(--ion-color-medium);
   margin-bottom: 5px;
 }
 
 .rest-detail {
   font-size: 14px;
-  color: #347ad6;
+  color: #347ad6; /* Keep button color as is */
   margin-top: 8px;
 }
 
 .start-workout-btn {
   margin-top: 20px;
-  --background: #347ad6;
+  --background: #347ad6; /* Keep button color as is */
   --color: #fff;
   font-weight: bold;
 }
 
 /* Exercise search */
 .exercise-search {
-  --background: #111;
-  --color: #fff;
-  --placeholder-color: #777;
+  --background: var(--ion-color-light-shade);
+  --color: var(--ion-color-dark);
+  --placeholder-color: var(--ion-color-medium);
   margin-bottom: 15px;
 }
 
 /* Options popover */
 .options-popover ion-content {
-  --background: #111;
+  --background: var(--ion-color-light-shade);
 }
 
 .options-popover ion-item {
   --background: transparent;
-  --color: #fff;
-}
-
-/* General styles */
-:host {
-  --ion-background-color: #000000;
-  --ion-text-color: #ffffff;
-  --ion-border-color: #333333;
-}
-
-ion-content {
-  --background: #000000;
-}
-
-ion-toolbar {
-  --background: #000000;
-  --color: #ffffff;
-}
-
-ion-modal {
-  --background: #000000;
-}
-
-/* Create workout page */
-.create-workout-container {
-  padding: 16px;
-}
-
-.create-button {
-  --color: #ffffff;
-  font-weight: bold;
-  margin-bottom: 20px;
-  height: 46px;
-}
-
-.no-workouts-message {
-  color: #888888;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* Workout cards */
-.workout-card {
-  --background: #111111;
-  border: 1px solid #333;
-  border-radius: 8px;
-  height: 100%;
-  overflow: hidden;
-}
-
-.workout-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-ion-card-title {
-  font-size: 1.2rem;
-  color: #ffffff;
-  margin: 0;
-  font-weight: bold;
-}
-
-ion-card-subtitle {
-  font-size: 0.9rem;
-  color: #777777;
-}
-
-/* Modal styles */
-.workout-modal ion-content, 
-.exercises-modal ion-content, 
-.details-modal ion-content {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
-}
-
-.workout-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.name-input {
-  --background: transparent;
-  --border-style: none;
-  font-size: 24px;
-}
-
-.template-name {
-  font-size: 24px;
-  --color: #ffffff;
-  font-weight: bold;
-}
-
-.add-exercise-btn {
-  --background: transparent;
-  --color: #347ad6;
-  font-weight: bold;
-  letter-spacing: 1px;
-  margin: 10px 0;
-}
-
-/* Exercise list */
-.exercises-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  margin-top: 10px;
-}
-
-.exercise-item {
-  --background: transparent;
-  margin-bottom: 5px;
-}
-
-.exercise-header {
-  --background: transparent;
-  --border-style: none;
-}
-
-.exercise-header h2 {
-  color: #347ad6;
-  font-weight: bold;
-}
-
-.exercise-header p {
-  color: #777777;
-  font-size: 14px;
-}
-
-/* Sets container */
-.sets-container {
-  background: #111111;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 5px;
-}
-
-.sets-header {
-  display: flex;
-  font-size: 12px;
-  color: #777777;
-  font-weight: bold;
-  padding: 5px 0;
-  margin-bottom: 10px;
-}
-
-.set-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.set-col {
-  width: 15%;
-  text-align: center;
-}
-
-.previous-col {
-  width: 20%;
-  text-align: center;
-  color: #555;
-}
-
-.weight-col {
-  width: 25%;
-  text-align: center;
+  --color: var(--ion-color-dark);
 }
 </style>

@@ -13,6 +13,12 @@
           refreshingSpinner="crescent">
         </ion-refresher-content>
       </ion-refresher>
+      
+      <!-- Welcome Message -->
+      <div class="welcome-message">
+        <h1>Welcome back, {{ userName || 'User' }}</h1>
+      </div>
+
       <div class="dashboard-container">
         <div class="stats-card">
           <h2>Deine Statistik</h2>
@@ -32,12 +38,13 @@
           </div>
         </div>
 
+        <!-- Rest of the content remains the same -->
         <div class="graph-card">
           <div class="card-header">
             <h2>Workouts pro Woche</h2>
             <div class="period-selector">
-              <span :class="{ active: selectedPeriod === 'month' }" @click="selectedPeriod = 'month'">Monat</span>
-              <span :class="{ active: selectedPeriod === '3months' }" @click="selectedPeriod = '3months'">3 Monate</span>
+              <span :class="{ active: selectedPeriod === 'month' }" @click="selectedPeriod = 'month'">Woche</span>
+              <span :class="{ active: selectedPeriod === '3months' }" @click="selectedPeriod = '3months'">Monat</span>
               <span :class="{ active: selectedPeriod === 'year' }" @click="selectedPeriod = 'year'">Jahr</span>
             </div>
           </div>
@@ -97,7 +104,9 @@ import {
   IonToolbar, 
   IonTitle, 
   IonContent,
-  IonIcon
+  IonIcon,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/vue';
 import { 
   timeOutline, 
@@ -140,20 +149,39 @@ export default defineComponent({
     IonToolbar,
     IonTitle,
     IonContent,
-    IonIcon
+    IonIcon,
+    IonRefresher,
+    IonRefresherContent
   },
   setup() {
     const completedWorkouts = ref<CompletedWorkout[]>([]);
     const selectedPeriod = ref('month');
-    
+    const isLoading = ref(false);
+    const userName = ref(''); // Add a ref for the user's name
+
+    // Fetch the user's name from localStorage
+    const fetchUserName = () => {
+      const savedProfile = localStorage.getItem('profile');
+      if (savedProfile) {
+        const profile = JSON.parse(savedProfile);
+        userName.value = profile.name || 'User';
+      }
+    };
+
     const loadCompletedWorkouts = () => {
+      isLoading.value = true;
       try {
         const savedWorkouts = localStorage.getItem('completedWorkouts');
         if (savedWorkouts) {
           completedWorkouts.value = JSON.parse(savedWorkouts);
+        } else {
+          completedWorkouts.value = [];
         }
       } catch (error) {
         console.error('Failed to load workouts:', error);
+        completedWorkouts.value = [];
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -293,11 +321,15 @@ export default defineComponent({
     };
     
     onMounted(() => {
+      // Fetch the user's name when the component is mounted
+      fetchUserName();
       loadCompletedWorkouts();
     });
 
     onActivated(() => {
-      refreshHistory(new CustomEvent('ionRefresh')); // Simulate a refresh event
+      // Fetch the user's name when the component is activated
+      fetchUserName();
+      loadCompletedWorkouts();
     });
     
     return {
@@ -311,19 +343,20 @@ export default defineComponent({
       formatDate,
       timeOutline,
       barbellOutline,
-      refreshHistory
+      refreshHistory,
+      isLoading,
+      userName // Return the user's name
     };
   }
 });
 </script>
-
 
 <style scoped>
 .dashboard-container {
   padding: 16px;
   height: 100%;
   overflow-y: auto;
-  background-color: #000000;
+  background-color: var(--ion-color-light);
 }
 
 .navbar-spacer {
@@ -331,7 +364,7 @@ export default defineComponent({
 }
 
 .stats-card, .graph-card, .recent-workouts-card {
-  background-color: #111111;
+  background-color: var(--ion-color-light-shade);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -339,7 +372,7 @@ export default defineComponent({
 
 h2 {
   margin: 0 0 16px 0;
-  color: #ffffff;
+  color: var(--ion-color-dark);
   font-size: 20px;
   font-weight: bold;
 }
@@ -357,12 +390,12 @@ h2 {
 .stat-value {
   font-size: 24px;
   font-weight: bold;
-  color: #b388ff; /* Purple color matching the graph */
+  color: #b388ff; /* Keep button color as is */
 }
 
 .stat-label {
   font-size: 14px;
-  color: #777777;
+  color: var(--ion-color-medium);
   margin-top: 4px;
 }
 
@@ -382,13 +415,13 @@ h2 {
   padding: 4px 8px;
   margin-left: 8px;
   cursor: pointer;
-  color: #777777;
+  color: var(--ion-color-medium);
   border-radius: 4px;
 }
 
 .period-selector span.active {
-  background-color: #222222;
-  color: #ffffff;
+  background-color: var(--ion-color-light-tint);
+  color: var(--ion-color-dark);
 }
 
 .graph-container {
@@ -408,7 +441,7 @@ h2 {
 }
 
 .y-label {
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 12px;
   height: 30px;
   display: flex;
@@ -435,7 +468,7 @@ h2 {
 .graph-bar {
   width: 100%;
   max-width: 24px;
-  background-color: #b388ff; /* Purple color matching your screenshot */
+  background-color: #b388ff; /* Keep button color as is */
   border-radius: 4px;
   position: absolute;
   bottom: 20px;
@@ -447,12 +480,12 @@ h2 {
 .bar-value {
   position: absolute;
   top: -20px;
-  color: #ffffff;
+  color: var(--ion-color-dark);
   font-size: 12px;
 }
 
 .graph-x-label {
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 12px;
   position: absolute;
   bottom: 0;
@@ -465,7 +498,7 @@ h2 {
 }
 
 .recent-workout-item {
-  border-bottom: 1px solid #222222;
+  border-bottom: 1px solid var(--ion-color-light-tint);
   padding: 12px 0;
 }
 
@@ -476,13 +509,13 @@ h2 {
 .workout-info h3 {
   margin: 0;
   font-size: 16px;
-  color: #ffffff;
+  color: var(--ion-color-dark);
 }
 
 .workout-info p {
   margin: 4px 0 0;
   font-size: 12px;
-  color: #777777;
+  color: var(--ion-color-medium);
 }
 
 .workout-stats {
@@ -493,7 +526,7 @@ h2 {
 .stat {
   display: flex;
   align-items: center;
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 12px;
   margin-right: 16px;
 }
@@ -503,8 +536,21 @@ h2 {
 }
 
 .no-workouts {
-  color: #777777;
+  color: var(--ion-color-medium);
   text-align: center;
   padding: 16px;
+}
+
+/* Add styles for the welcome message */
+.welcome-message {
+  padding: 16px;
+  background-color: var(--ion-color-light-shade);
+  border-bottom: 1px solid var(--ion-color-light-tint);
+}
+
+.welcome-message h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--ion-color-dark);
 }
 </style>

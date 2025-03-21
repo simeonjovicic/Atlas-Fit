@@ -213,7 +213,8 @@ export default defineComponent({
 .history-container {
   padding: 16px;
   height: 100%; /* Ensure the container takes up the full height */
-  overflow-y: auto; 
+  overflow-y: auto;
+  background-color: var(--ion-color-light);
 }
 
 .navbar-spacer {
@@ -230,11 +231,11 @@ export default defineComponent({
 .month-header h2 {
   margin: 0;
   font-size: 24px;
-  color: #ffffff;
+  color: var(--ion-color-dark);
 }
 
 .workout-count {
-  color: #777777;
+  color: var(--ion-color-medium);
 }
 
 .month-section {
@@ -242,10 +243,11 @@ export default defineComponent({
 }
 
 .workout-card {
-  background-color: #111111;
+  background-color: var(--ion-color-light-shade);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
+  border: 1px solid var(--ion-color-light-tint); /* Added border using theme variable */
 }
 
 .workout-header {
@@ -254,14 +256,14 @@ export default defineComponent({
 
 .workout-header h3 {
   margin: 0;
-  color: #ffffff;
+  color: var(--ion-color-dark);
   font-size: 20px;
   font-weight: bold;
 }
 
 .workout-header p {
   margin: 4px 0 0;
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 14px;
 }
 
@@ -269,13 +271,13 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   padding-bottom: 8px;
-  border-bottom: 1px solid #222222;
+  border-bottom: 1px solid var(--ion-color-light-tint);
   margin-bottom: 8px;
 }
 
 .sets-label, .best-set-label {
   font-size: 14px;
-  color: #777777;
+  color: var(--ion-color-medium);
   font-weight: bold;
 }
 
@@ -283,23 +285,23 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid #222222;
+  border-bottom: 1px solid var(--ion-color-light-tint);
 }
 
 .sets-info {
   flex: 1;
-  color: #ffffff;
+  color: var(--ion-color-dark);
 }
 
 .best-set-info {
-  color: #ffffff;
+  color: var(--ion-color-dark);
   text-align: right;
 }
 
 .workout-stats {
   display: flex;
   margin-top: 16px;
-  color: #777777;
+  color: var(--ion-color-medium);
   font-size: 14px;
 }
 

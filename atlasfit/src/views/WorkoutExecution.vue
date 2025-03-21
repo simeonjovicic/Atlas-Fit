@@ -27,10 +27,19 @@
   
           <div class="timer" v-if="restTimerActive">
             <div class="timer-display">{{ formatTime(remainingRestTime) }}</div>
-            <ion-button @click="skipRestTimer" fill="clear" class="skip-button">
-              <ion-icon :icon="playForward"></ion-icon>
-            </ion-button>
+            <div class="timer-controls">
+               <ion-button @click="remove30Seconds" fill="clear" class="timer-control-button">
+                <div class="custom-icon">-30</div>
+              </ion-button>
+              <ion-button @click="skipRestTimer" fill="clear" class="skip-button">
+                <ion-icon :icon="playForward"></ion-icon>
+                </ion-button>
+                <ion-button @click="add30Seconds" fill="clear" class="timer-control-button">
+                  <div class="custom-icon">+30</div>
+                </ion-button>
+             
           </div>
+        </div>
   
           <div class="sets-container" v-if="!restTimerActive">
             <div class="sets-header">
@@ -130,6 +139,8 @@
     checkmarkOutline,
     checkmarkCircle,
     playForward,
+    addCircle,
+    removeCircle,
   } from 'ionicons/icons';
   import { useRouter } from 'vue-router';
   
@@ -261,6 +272,18 @@
           nextExercise();
         }
       };
+      const add30Seconds = () => {
+      remainingRestTime.value += 30;
+      };
+
+      const remove30Seconds = () => {
+      if (remainingRestTime.value > 30) {
+        remainingRestTime.value -= 30;
+      } else {
+        remainingRestTime.value = 0;
+        skipRestTimer();
+      }
+    };
   
       // Complete a set
       const completeSet = (setIndex: number) => {
@@ -492,6 +515,10 @@ const endWorkout = () => {
         checkmarkOutline,
         checkmarkCircle,
         playForward,
+        addCircle,
+        removeCircle,
+        add30Seconds,
+        remove30Seconds,
       };
     }
   });
@@ -499,6 +526,32 @@ const endWorkout = () => {
   
   <style scoped>
   /* General styles */
+  .timer-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .timer-control-button {
+    --color: #347ad6;
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+  
+  .custom-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #347ad6;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: bold;
+    color: #347ad6;
+  }
+
   .workout-container {
     padding: 16px;
     height: 100%;

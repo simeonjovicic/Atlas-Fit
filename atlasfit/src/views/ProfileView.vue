@@ -380,114 +380,117 @@
   
   <style scoped>
   /* Profile header styling */
-  .profile-header {
-    padding: 24px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: var(--ion-color-primary-shade);
-    color: white;
-  }
-  
-  .profile-photo-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin-bottom: 12px;
-  }
-  
-  .profile-photo {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid white;
-  }
-  
-  .edit-overlay {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: var(--ion-color-primary);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .profile-name {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-  }
-  
-  /* Form styling */
-  .form-container {
-    padding: 0;
-    background: var(--ion-background-color);
-  }
-  
-  .section {
-    margin-bottom: 20px;
-  }
-  
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 16px 8px;
-  }
-  
-  .section-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--ion-color-dark);
-  }
-  
-  .unit-indicator {
-    color: var(--ion-color-medium);
-    font-size: 14px;
-  }
-  
-  .unit-label {
-    color: var(--ion-color-medium);
-    margin-left: 4px;
-    font-size: 14px;
-  }
-  
-  /* Group styling */
-  .measurement-group {
-    background: var(--ion-background-color);
-    margin-bottom: 8px;
-  }
-  
-  .measurement-group h4 {
-    margin: 0;
-    padding: 12px 16px 4px;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ion-color-medium);
-  }
-  
-  /* Item styling */
-  ion-item {
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --min-height: 48px;
-  }
-  
-  ion-input {
-    --padding-start: 8px;
-    text-align: right;
-  }
-  
-  .save-button {
-    margin: 20px 16px;
-    padding-bottom: 80px;
-  }
+.profile-header {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--ion-color-primary-shade);
+  color: var(--ion-color-primary-contrast);
+}
+
+.profile-photo-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 12px;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--ion-color-primary-contrast);
+}
+
+.edit-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--ion-color-primary);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-primary-contrast);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ion-color-primary-contrast);
+}
+
+/* Form styling */
+.form-container {
+  padding: 0;
+  background: var(--ion-background-color);
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 8px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.unit-indicator {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+}
+
+.unit-label {
+  color: var(--ion-color-medium);
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+/* Group styling */
+.measurement-group {
+  background: var(--ion-background-color);
+  margin-bottom: 8px;
+}
+
+.measurement-group h4 {
+  margin: 0;
+  padding: 12px 16px 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+}
+
+/* Item styling */
+ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 48px;
+}
+
+ion-input {
+  --padding-start: 8px;
+  text-align: right;
+}
+
+.save-button {
+  margin: 20px 16px;
+  padding-bottom: 80px;
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+}
   </style>
