@@ -401,7 +401,7 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--ion-color-primary-contrast);
+  border: 3px solid white;
 }
 
 .edit-overlay {
@@ -423,7 +423,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--ion-color-primary-contrast);
+  color: white
 }
 
 /* Form styling */

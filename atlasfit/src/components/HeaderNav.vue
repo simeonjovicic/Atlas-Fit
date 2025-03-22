@@ -20,11 +20,9 @@ export default defineComponent({
   components: { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon },
   setup() {
     const router = useRouter();
-
     const goToSettings = () => {
-      router.push("/settings");
+      router.push("/edit");
     };
-
     return { settingsOutline, goToSettings };
   },
 });
@@ -34,10 +32,6 @@ export default defineComponent({
 .custom-header {
   --ion-toolbar-background: transparent; /* Makes toolbar transparent */
   box-shadow: none; /* Removes shadow */
- 
-}
-.toolbar-ios {
-  padding-top: env(safe-area-inset-top);
 }
 
 </style>

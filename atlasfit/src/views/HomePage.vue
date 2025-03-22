@@ -38,6 +38,28 @@
           </div>
         </div>
 
+<div class="weekly-challenge-card">
+    <h2>Wöchentliche Challenge</h2>
+    <div v-if="challenge" class="challenge-content">
+      <div class="challenge-header">
+        <div class="challenge-title">{{ challenge.name }}</div>
+        <div class="challenge-status" :class="{ 'completed': challengeCompleted }">
+          {{ challengeCompleted ? 'Abgeschlossen' : 'In Bearbeitung' }}
+        </div>
+      </div>
+      <p class="challenge-description">
+        Führe diese Übung in einem Workout diese Woche aus, um die Challenge zu bestehen!
+      </p>
+      <div class="challenge-timer">
+        <ion-icon :icon="timeOutline"></ion-icon>
+        <span>Endet in {{ daysUntilReset }} Tagen</span>
+      </div>
+    </div>
+    <div v-else class="no-challenge">
+      <p>Lade deine wöchentliche Challenge...</p>
+    </div>
+  </div>
+
         <!-- Rest of the content remains the same -->
         <div class="graph-card">
           <div class="card-header">
@@ -98,6 +120,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, onActivated } from 'vue';
+import exercises from '@/resources/exercises.json';
 import { 
   IonPage, 
   IonHeader, 
@@ -158,6 +181,9 @@ export default defineComponent({
     const selectedPeriod = ref('month');
     const isLoading = ref(false);
     const userName = ref(''); // Add a ref for the user's name
+    const challenge = ref(null);
+    const challengeCompleted = ref(false);
+    const daysUntilReset = ref(0);
 
     // Fetch the user's name from localStorage
     const fetchUserName = () => {
@@ -167,6 +193,70 @@ export default defineComponent({
         userName.value = profile.name || 'User';
       }
     };
+
+    const generateWeeklyChallenge = () => {
+  // Get current date and create a week identifier
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
+  weekStart.setHours(0, 0, 0, 0);
+  
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
+  weekEnd.setHours(23, 59, 59, 999);
+  
+  const weekIdentifier = `week-${weekStart.getFullYear()}-${weekStart.getMonth() + 1}-${weekStart.getDate()}`;
+  
+  // Calculate days until reset
+  const timeDiff = weekEnd.getTime() - now.getTime();
+  daysUntilReset.value = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  // Check if we already have a challenge for this week
+  const savedChallenge = localStorage.getItem(`weeklyChallenge-${weekIdentifier}`);
+  
+  if (savedChallenge) {
+    // Use existing challenge
+    challenge.value = JSON.parse(savedChallenge);
+  } else {
+    if (!exercises || !exercises.length) {
+      console.error('No exercises available in exercises.json');
+      return;
+    }
+    
+    // Generate new challenge
+    const randomIndex = Math.floor(Math.random() * exercises.length);
+    challenge.value = exercises[randomIndex];
+    
+    // Save this challenge
+    localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
+  }
+  
+  // Check if challenge is completed
+  checkChallengeCompletion(weekStart, weekEnd);
+};
+
+// Add function to check if challenge is completed
+const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
+  if (!challenge.value) return;
+  
+  challengeCompleted.value = false;
+  
+  // Check completed workouts for this challenge
+  for (const workout of completedWorkouts.value) {
+    const workoutDate = new Date(workout.completedAt);
+    
+    // Only check workouts from current week
+    if (workoutDate >= weekStart && workoutDate <= weekEnd) {
+      // Check if any exercise in this workout matches our challenge
+      for (const exercise of workout.exercises) {
+        if (exercise.name === challenge.value.name) {
+          challengeCompleted.value = true;
+          return;
+        }
+      }
+    }
+  }
+};
 
     const loadCompletedWorkouts = () => {
       isLoading.value = true;
@@ -324,15 +414,33 @@ export default defineComponent({
       // Fetch the user's name when the component is mounted
       fetchUserName();
       loadCompletedWorkouts();
+      generateWeeklyChallenge();
     });
 
     onActivated(() => {
       // Fetch the user's name when the component is activated
       fetchUserName();
       loadCompletedWorkouts();
+      generateWeeklyChallenge();
     });
+
+    watch(completedWorkouts, () => {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
+  weekStart.setHours(0, 0, 0, 0);
+  
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
+  weekEnd.setHours(23, 59, 59, 999);
+  
+  checkChallengeCompletion(weekStart, weekEnd);
+});
     
     return {
+      challenge,
+      challengeCompleted,
+      daysUntilReset,
       totalWorkouts,
       totalWorkoutsThisMonth,
       averageWorkoutsPerWeek,
@@ -352,6 +460,61 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.weekly-challenge-card {
+  background-color: var(--ion-color-light-shade);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.challenge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.challenge-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--ion-color-dark);
+}
+
+.challenge-status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  background-color: #ff9d00;
+  color: white;
+}
+
+.challenge-status.completed {
+  background-color: #4caf50;
+}
+
+.challenge-description {
+  color: var(--ion-color-medium);
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.challenge-timer {
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-medium);
+  font-size: 12px;
+}
+
+.challenge-timer ion-icon {
+  margin-right: 4px;
+}
+
+.no-challenge {
+  color: var(--ion-color-medium);
+  text-align: center;
+  padding: 16px;
+}
+
 .dashboard-container {
   padding: 16px;
   height: 100%;

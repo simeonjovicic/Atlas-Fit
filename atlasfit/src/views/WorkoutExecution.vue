@@ -199,6 +199,8 @@
       const completedSets = ref<Record<string, boolean>>({});
       let timerInterval: number | null = null;
       let restTimerInterval: number | null = null;
+      const setSound = new Audio('/sounds/lebron-james-thats-to-easy.mp3');
+      const endWorkoutSound = new Audio('/sounds/you-are-my-sunshine-dark-lebron-james.mp3');
   
       const currentExercise = computed(() => {
         if (!workout.value || !workout.value.exercises.length) return null;
@@ -307,7 +309,9 @@
           position: 'bottom',
           color: 'success'
         }).then(toast => toast.present());
-      };
+        setSound.play().catch((error) => {
+  console.error('Failed to play sound:', error);
+});};
   
       // Check if a set is completed
       const setCompleted = (setIndex: number) => {
@@ -463,11 +467,14 @@ const endWorkout = () => {
     
     // Show completion toast
     toastController.create({
-      message: 'Workout completed!',
-      duration: 2000,
-      position: 'bottom',
+      message: 'Workout completed! Great job! 💪',
+      duration: 1500,
+      position: 'top',
       color: 'success'
     }).then(toast => toast.present());
+    endWorkoutSound.play().catch((error) => {
+  console.error('Failed to play sound:', error);
+});
   }
   
   // Navigate back to workout list

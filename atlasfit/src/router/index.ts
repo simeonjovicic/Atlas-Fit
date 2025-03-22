@@ -6,6 +6,7 @@ import SearchWorkouts from '../views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import WorkoutHistory from '@/views/WorkoutHistory.vue';
+import VideoPlayer from '@/views/VideoPlayer.vue';
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -47,6 +48,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/history',
     name: 'WorkoutHistory',
     component: WorkoutHistory
+  },
+  {
+    path: '/edit',
+    name: 'VideoPlayer.vue',
+    component: VideoPlayer
   }
 ]
 
