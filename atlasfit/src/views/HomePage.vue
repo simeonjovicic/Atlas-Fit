@@ -6,7 +6,12 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :scroll-y="true">
+    <!-- Fixed welcome message outside scrollable content -->
+    <div class="welcome-message fixed-welcome">
+      <h1>Welcome back, {{ userName || 'User' }}</h1>
+    </div>
+
+    <ion-content :scroll-y="true" class="content-with-fixed-welcome">
       <ion-refresher slot="fixed" @ionRefresh="refreshHistory($event)">
         <ion-refresher-content
           pullingIcon="arrow-down"
@@ -14,11 +19,6 @@
         </ion-refresher-content>
       </ion-refresher>
       
-      <!-- Welcome Message -->
-      <div class="welcome-message">
-        <h1>Welcome back, {{ userName || 'User' }}</h1>
-      </div>
-
       <div class="dashboard-container">
         <div class="stats-card">
           <h2>Deine Statistik</h2>
@@ -38,27 +38,27 @@
           </div>
         </div>
 
-<div class="weekly-challenge-card">
-    <h2>Wöchentliche Challenge</h2>
-    <div v-if="challenge" class="challenge-content">
-      <div class="challenge-header">
-        <div class="challenge-title">{{ challenge.name }}</div>
-        <div class="challenge-status" :class="{ 'completed': challengeCompleted }">
-          {{ challengeCompleted ? 'Abgeschlossen' : 'In Bearbeitung' }}
+        <div class="weekly-challenge-card">
+          <h2>Wöchentliche Challenge</h2>
+          <div v-if="challenge" class="challenge-content">
+            <div class="challenge-header">
+              <div class="challenge-title">{{ challenge.name }}</div>
+              <div class="challenge-status" :class="{ 'completed': challengeCompleted }">
+                {{ challengeCompleted ? 'Abgeschlossen' : 'In Bearbeitung' }}
+              </div>
+            </div>
+            <p class="challenge-description">
+              Führe diese Übung in einem Workout diese Woche aus, um die Challenge zu bestehen!
+            </p>
+            <div class="challenge-timer">
+              <ion-icon :icon="timeOutline"></ion-icon>
+              <span>Endet in {{ daysUntilReset }} Tagen</span>
+            </div>
+          </div>
+          <div v-else class="no-challenge">
+            <p>Lade deine wöchentliche Challenge...</p>
+          </div>
         </div>
-      </div>
-      <p class="challenge-description">
-        Führe diese Übung in einem Workout diese Woche aus, um die Challenge zu bestehen!
-      </p>
-      <div class="challenge-timer">
-        <ion-icon :icon="timeOutline"></ion-icon>
-        <span>Endet in {{ daysUntilReset }} Tagen</span>
-      </div>
-    </div>
-    <div v-else class="no-challenge">
-      <p>Lade deine wöchentliche Challenge...</p>
-    </div>
-  </div>
 
         <!-- Rest of the content remains the same -->
         <div class="graph-card">
@@ -72,26 +72,26 @@
           </div>
           
           <div class="graph-container">
-  <div class="graph-y-axis">
-    <div v-for="n in 6" :key="n" class="y-label">{{ 6 - n }}</div>
-  </div>
-  <div class="graph-content">
-    <!-- Add target line here -->
-    <div 
-      v-if="workoutsPerWeekTarget > 0" 
-      class="target-line" 
-      :style="{ bottom: `${(workoutsPerWeekTarget / 6) * 180 + 33}px` }"
-    >
-      <span class="target-label">Ziel: {{ workoutsPerWeekTarget }}</span>
-    </div>
-    
-    <div v-for="(week, index) in displayedWeeks" :key="index" class="graph-bar-container">
-      <div class="graph-bar" :style="{ height: calculateBarHeight(week.count) }">
-      </div>
-      <div class="graph-x-label">{{ week.label }}</div>
-    </div>
-  </div>
-</div>
+            <div class="graph-y-axis">
+              <div v-for="n in 6" :key="n" class="y-label">{{ 6 - n }}</div>
+            </div>
+            <div class="graph-content">
+              <!-- Add target line here -->
+              <div 
+                v-if="workoutsPerWeekTarget > 0" 
+                class="target-line" 
+                :style="{ bottom: `${(workoutsPerWeekTarget / 6) * 180 + 33}px` }"
+              >
+                <span class="target-label">Ziel: {{ workoutsPerWeekTarget }}</span>
+              </div>
+              
+              <div v-for="(week, index) in displayedWeeks" :key="index" class="graph-bar-container">
+                <div class="graph-bar" :style="{ height: calculateBarHeight(week.count) }">
+                </div>
+                <div class="graph-x-label">{{ week.label }}</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="recent-workouts-card">
@@ -127,6 +127,7 @@
 </template>
 
 <script lang="ts">
+// Script remains the same
 import { defineComponent, ref, computed, onMounted, watch, onActivated } from 'vue';
 import exercises from '@/resources/exercises.json';
 import { 
@@ -205,68 +206,68 @@ export default defineComponent({
     };
 
     const generateWeeklyChallenge = () => {
-  // Get current date and create a week identifier
-  const now = new Date();
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
-  weekStart.setHours(0, 0, 0, 0);
-  
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
-  weekEnd.setHours(23, 59, 59, 999);
-  
-  const weekIdentifier = `week-${weekStart.getFullYear()}-${weekStart.getMonth() + 1}-${weekStart.getDate()}`;
-  
-  // Calculate days until reset
-  const timeDiff = weekEnd.getTime() - now.getTime();
-  daysUntilReset.value = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  
-  // Check if we already have a challenge for this week
-  const savedChallenge = localStorage.getItem(`weeklyChallenge-${weekIdentifier}`);
-  
-  if (savedChallenge) {
-    // Use existing challenge
-    challenge.value = JSON.parse(savedChallenge);
-  } else {
-    if (!exercises || !exercises.length) {
-      console.error('No exercises available in exercises.json');
-      return;
-    }
-    
-    // Generate new challenge
-    const randomIndex = Math.floor(Math.random() * exercises.length);
-    challenge.value = exercises[randomIndex];
-    
-    // Save this challenge
-    localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
-  }
-  
-  // Check if challenge is completed
-  checkChallengeCompletion(weekStart, weekEnd);
-};
-
-// Add function to check if challenge is completed
-const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
-  if (!challenge.value) return;
-  
-  challengeCompleted.value = false;
-  
-  // Check completed workouts for this challenge
-  for (const workout of completedWorkouts.value) {
-    const workoutDate = new Date(workout.completedAt);
-    
-    // Only check workouts from current week
-    if (workoutDate >= weekStart && workoutDate <= weekEnd) {
-      // Check if any exercise in this workout matches our challenge
-      for (const exercise of workout.exercises) {
-        if (exercise.name === challenge.value.name) {
-          challengeCompleted.value = true;
+      // Get current date and create a week identifier
+      const now = new Date();
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
+      weekEnd.setHours(23, 59, 59, 999);
+      
+      const weekIdentifier = `week-${weekStart.getFullYear()}-${weekStart.getMonth() + 1}-${weekStart.getDate()}`;
+      
+      // Calculate days until reset
+      const timeDiff = weekEnd.getTime() - now.getTime();
+      daysUntilReset.value = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
+      // Check if we already have a challenge for this week
+      const savedChallenge = localStorage.getItem(`weeklyChallenge-${weekIdentifier}`);
+      
+      if (savedChallenge) {
+        // Use existing challenge
+        challenge.value = JSON.parse(savedChallenge);
+      } else {
+        if (!exercises || !exercises.length) {
+          console.error('No exercises available in exercises.json');
           return;
         }
+        
+        // Generate new challenge
+        const randomIndex = Math.floor(Math.random() * exercises.length);
+        challenge.value = exercises[randomIndex];
+        
+        // Save this challenge
+        localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
       }
-    }
-  }
-};
+      
+      // Check if challenge is completed
+      checkChallengeCompletion(weekStart, weekEnd);
+    };
+
+    // Add function to check if challenge is completed
+    const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
+      if (!challenge.value) return;
+      
+      challengeCompleted.value = false;
+      
+      // Check completed workouts for this challenge
+      for (const workout of completedWorkouts.value) {
+        const workoutDate = new Date(workout.completedAt);
+        
+        // Only check workouts from current week
+        if (workoutDate >= weekStart && workoutDate <= weekEnd) {
+          // Check if any exercise in this workout matches our challenge
+          for (const exercise of workout.exercises) {
+            if (exercise.name === challenge.value.name) {
+              challengeCompleted.value = true;
+              return;
+            }
+          }
+        }
+      }
+    };
 
     const loadCompletedWorkouts = () => {
       isLoading.value = true;
@@ -333,104 +334,106 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     });
 
     const getWeeksInPeriod = (periodType: string) => {
-  const weeks: WeekData[] = [];
-  const now = new Date();
-  let startDate: Date;
-  
-  // Determine start date based on selected period
-  switch (periodType) {
-    case 'month':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 28); // 4 weeks back
-      break;
-    case '3months':
-      startDate = new Date(now);
-      startDate.setMonth(now.getMonth() - 3); // 3 months back
-      break;
-    case 'year':
-      startDate = new Date(now);
-      startDate.setFullYear(now.getFullYear() - 1); // 1 year back
-      break;
-    default:
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 28);
-  }
-  
-  // Adjust to start of week (Monday)
-  const dayOfWeek = startDate.getDay() || 7; // Convert Sunday (0) to 7
-  if (dayOfWeek !== 1) { // If not Monday
-    startDate.setDate(startDate.getDate() - (dayOfWeek - 1)); // Go back to Monday
-  }
-  startDate.setHours(0, 0, 0, 0);
-  
-  // Generate weekly ranges up to current date
-  let currentWeekStart = new Date(startDate);
-  
-  while (currentWeekStart <= now) {
-    const weekEnd = new Date(currentWeekStart);
-    weekEnd.setDate(currentWeekStart.getDate() + 6); // Sunday
-    weekEnd.setHours(23, 59, 59, 999);
-    
-    // Format as DD.MM.
-    const label = `${currentWeekStart.getDate()}.${currentWeekStart.getMonth() + 1}.`;
-    
-    weeks.push({
-      startDate: new Date(currentWeekStart),
-      endDate: new Date(weekEnd),
-      label,
-      count: 0
-    });
-    
-    // Move to next Monday
-    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-  }
-  
-  // For year view, reduce number of weeks to avoid overcrowding
-  if (periodType === 'year') {
-    // Return ~12 evenly spaced weeks
-    const step = Math.max(1, Math.floor(weeks.length / 12));
-    return weeks.filter((_, index) => index % step === 0).slice(-8);
-  }
-  
-  // Return the last 8 weeks for other views
-  return weeks.slice(-8);
-};
+      const weeks: WeekData[] = [];
+      const now = new Date();
+      let startDate: Date;
+      
+      // Determine start date based on selected period
+      switch (periodType) {
+        case 'month':
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 28); // 4 weeks back
+          break;
+        case '3months':
+          startDate = new Date(now);
+          startDate.setMonth(now.getMonth() - 3); // 3 months back
+          break;
+        case 'year':
+          startDate = new Date(now);
+          startDate.setFullYear(now.getFullYear() - 1); // 1 year back
+          break;
+        default:
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 28);
+      }
+      
+      // Adjust to start of week (Monday)
+      const dayOfWeek = startDate.getDay() || 7; // Convert Sunday (0) to 7
+      if (dayOfWeek !== 1) { // If not Monday
+        startDate.setDate(startDate.getDate() - (dayOfWeek - 1)); // Go back to Monday
+      }
+      startDate.setHours(0, 0, 0, 0);
+      
+      // Generate weekly ranges up to current date
+      let currentWeekStart = new Date(startDate);
+      
+      while (currentWeekStart <= now) {
+        const weekEnd = new Date(currentWeekStart);
+        weekEnd.setDate(currentWeekStart.getDate() + 6); // Sunday
+        weekEnd.setHours(23, 59, 59, 999);
+        
+        // Format as DD.MM.
+        const label = `${currentWeekStart.getDate()}.${currentWeekStart.getMonth() + 1}.`;
+        
+        weeks.push({
+          startDate: new Date(currentWeekStart),
+          endDate: new Date(weekEnd),
+          label,
+          count: 0
+        });
+        
+        // Move to next Monday
+        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+      }
+      
+      // For year view, reduce number of weeks to avoid overcrowding
+      if (periodType === 'year') {
+        // Return ~12 evenly spaced weeks
+        const step = Math.max(1, Math.floor(weeks.length / 12));
+        return weeks.filter((_, index) => index % step === 0).slice(-8);
+      }
+      
+      // Return the last 8 weeks for other views
+      return weeks.slice(-8);
+    };
     
     const displayedWeeks = computed(() => {
-  const weeks = getWeeksInPeriod(selectedPeriod.value);
-  
-  // Reset counts
-  weeks.forEach(week => week.count = 0);
-  
-  // Count workouts for each week
-  completedWorkouts.value.forEach(workout => {
-    const workoutDate = new Date(workout.completedAt);
+      const weeks = getWeeksInPeriod(selectedPeriod.value);
+      
+      // Reset counts
+      weeks.forEach(week => week.count = 0);
+      
+      // Count workouts for each week
+      completedWorkouts.value.forEach(workout => {
+        const workoutDate = new Date(workout.completedAt);
+        
+        for (const week of weeks) {
+          // Check if workout falls within this week
+          if (workoutDate >= week.startDate && workoutDate <= week.endDate) {
+            week.count++;
+            break;
+          }
+        }
+      });
+      
+      console.log('Weeks with workout counts:', weeks);
+      return weeks;
+    });
     
-    for (const week of weeks) {
-      // Check if workout falls within this week
-      if (workoutDate >= week.startDate && workoutDate <= week.endDate) {
-        week.count++;
-        break;
-      }
-    }
-  });
-  
-  console.log('Weeks with workout counts:', weeks);
-  return weeks;
-});
     const checkAndRefreshWeeks = () => {
-  // Force refresh of the displayedWeeks computed property
-  selectedPeriod.value = selectedPeriod.value;
-  console.log("Refreshed week data:", displayedWeeks.value);
-};
+      // Force refresh of the displayedWeeks computed property
+      selectedPeriod.value = selectedPeriod.value;
+      console.log("Refreshed week data:", displayedWeeks.value);
+    };
     
-   const calculateBarHeight = (count: number) => {
-  const maxHeight = 100; // Max height in percentage
-  const maxCount = 6; // Maximum number on the Y-axis
-  const cappedCount = Math.min(count, maxCount);
-  const height = (cappedCount / maxCount) * maxHeight;
-  return `${height}%`;
-};
+    const calculateBarHeight = (count: number) => {
+      const maxHeight = 100; // Max height in percentage
+      const maxCount = 6; // Maximum number on the Y-axis
+      const cappedCount = Math.min(count, maxCount);
+      const height = (cappedCount / maxCount) * maxHeight;
+      return `${height}%`;
+    };
+    
     const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('de', {
@@ -449,7 +452,7 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     });
 
     onActivated(() => {
-       checkAndRefreshWeeks();
+      checkAndRefreshWeeks();
       // Fetch the user's name when the component is activated
       fetchUserName();
       loadCompletedWorkouts();
@@ -457,17 +460,17 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     });
 
     watch(completedWorkouts, () => {
-  const now = new Date();
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
-  weekStart.setHours(0, 0, 0, 0);
-  
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
-  weekEnd.setHours(23, 59, 59, 999);
-  
-  checkChallengeCompletion(weekStart, weekEnd);
-});
+      const now = new Date();
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
+      weekEnd.setHours(23, 59, 59, 999);
+      
+      checkChallengeCompletion(weekStart, weekEnd);
+    });
     
     return {
       challenge,
@@ -493,6 +496,38 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
 </script>
 
 <style scoped>
+/* Update the welcome message to be fixed */
+.fixed-welcome {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: var(--ion-color-light-shade);
+  border-bottom: 1px solid var(--ion-color-light-tint);
+  margin-top: 24px; /* Account for custom toolbar padding */
+}
+
+/* Add padding to the content to account for fixed welcome */
+.content-with-fixed-welcome {
+  --padding-top: 65px; /* Height of welcome message + some spacing */
+}
+
+/* Improve scrolling performance */
+.dashboard-container {
+  padding: 16px;
+  height: 100%;
+  background-color: var(--ion-color-light);
+  will-change: transform; /* Optimize for animation */
+  -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+}
+
+/* Ensure dashboard container height is correct */
+ion-content {
+  --overflow: hidden;
+}
+
 .weekly-challenge-card {
   background-color: var(--ion-color-light-shade);
   border-radius: 8px;
@@ -546,13 +581,6 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
   color: var(--ion-color-medium);
   text-align: center;
   padding: 16px;
-}
-
-.dashboard-container {
-  padding: 16px;
-  height: 100%;
-  overflow-y: auto;
-  background-color: var(--ion-color-light);
 }
 
 .navbar-spacer {
@@ -674,7 +702,6 @@ h2 {
   align-items: flex-start;
 }
 
-
 .graph-x-label {
   color: var(--ion-color-medium);
   font-size: 12px;
@@ -754,7 +781,7 @@ h2 {
   z-index: 1;
 }
 
-.custom-toolbar{
+.custom-toolbar {
   padding-top: 24px;
 }
 

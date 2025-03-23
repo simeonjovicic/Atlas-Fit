@@ -10,6 +10,16 @@ export class NotificationService {
   // Initialize notifications when app starts
   public static async initialize(): Promise<void> {
     try {
+      // Check if notifications are enabled
+      const notificationsEnabled = localStorage.getItem('notificationsEnabled');
+      
+      if (notificationsEnabled !== 'true') {
+        console.log('Notifications are disabled by user preference');
+        // Cancel any existing notifications when disabled
+        await this.cancelAllNotifications();
+        return;
+      }
+      
       // Request permission to send notifications
       const permissionStatus = await LocalNotifications.requestPermissions();
       
@@ -27,6 +37,14 @@ export class NotificationService {
   // Schedule daily workout reminder notification
   public static async scheduleDailyWorkoutReminder(): Promise<void> {
     try {
+      // Check if notifications are enabled
+      const notificationsEnabled = localStorage.getItem('notificationsEnabled');
+      
+      if (notificationsEnabled !== 'true') {
+        console.log('Notifications are disabled by user preference');
+        return;
+      }
+      
       // Cancel any existing notifications first
       await this.cancelAllNotifications();
       
@@ -64,6 +82,13 @@ export class NotificationService {
       
       // Register listener for when notification is triggered
       LocalNotifications.addListener('localNotificationReceived', async (notification) => {
+        // Check if notifications are still enabled
+        const notificationsEnabled = localStorage.getItem('notificationsEnabled');
+        
+        if (notificationsEnabled !== 'true') {
+          return;
+        }
+        
         if (notification.extra?.type === 'workout-reminder') {
           // Update the notification with current progress when triggered
           await this.updateWorkoutReminderNotification(notification.id);
@@ -79,6 +104,13 @@ export class NotificationService {
   // Update notification content with current workout progress
   private static async updateWorkoutReminderNotification(notificationId: number): Promise<void> {
     try {
+      // Check if notifications are enabled
+      const notificationsEnabled = localStorage.getItem('notificationsEnabled');
+      
+      if (notificationsEnabled !== 'true') {
+        return;
+      }
+      
       const { workoutsCompleted, workoutsTarget, remainingWorkouts } = await this.getCurrentWeekStats();
       
       let notificationBody: string;
@@ -173,6 +205,23 @@ export class NotificationService {
       }
     } catch (error) {
       console.error('Error canceling notifications:', error);
+    }
+  }
+  
+  // Add a method to toggle notifications
+  public static async toggleNotifications(enabled: boolean): Promise<void> {
+    try {
+      localStorage.setItem('notificationsEnabled', enabled ? 'true' : 'false');
+      
+      if (enabled) {
+        await this.initialize();
+      } else {
+        await this.cancelAllNotifications();
+      }
+      
+      console.log(`Notifications ${enabled ? 'enabled' : 'disabled'}`);
+    } catch (error) {
+      console.error('Error toggling notifications:', error);
     }
   }
 }

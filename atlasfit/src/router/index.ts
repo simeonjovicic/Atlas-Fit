@@ -6,7 +6,7 @@ import SearchWorkouts from '../views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import WorkoutHistory from '@/views/WorkoutHistory.vue';
-import VideoPlayer from '@/views/VideoPlayer.vue';
+import SettingsView from '@/views/SettingsView.vue';
 import WelcomePage from '@/views/WelcomePage.vue';
 
 
@@ -52,8 +52,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/edit',
-    name: 'VideoPlayer.vue',
-    component: VideoPlayer
+    name: 'SettingsView.vue',
+    component: SettingsView
   },
   {
      path: '/welcome',
