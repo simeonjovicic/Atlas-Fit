@@ -1,7 +1,7 @@
 <template>
     <ion-page>
       <ion-header>
-        <ion-toolbar>
+        <ion-toolbar class="custom-toolbar">
           <ion-title>Profile</ion-title>
         </ion-toolbar>
       </ion-header>
@@ -42,6 +42,17 @@
                 ></ion-input>
                 <div slot="end" class="unit-label">kg</div>
               </ion-item>
+              <ion-item>
+  <ion-label class="fixed-label">Workouts per Week</ion-label>
+  <ion-input 
+    type="number" 
+    v-model="profile.workoutsPerWeek" 
+    placeholder="0"
+    min="0"
+    max="7"
+    inputmode="numeric"
+  ></ion-input>
+</ion-item>
               
               <ion-item>
                 <ion-label>Height</ion-label>
@@ -202,8 +213,11 @@
                   ></ion-input>
                 </ion-item>
               </div>
+              
             </ion-list>
           </div>
+          
+          
           
           <ion-button expand="block" class="save-button" @click="saveProfile">
             Save Changes
@@ -253,6 +267,7 @@
         name: '',
         weight: null,
         height: null,
+        workoutsPerWeek: null,
         measurements: {
           chest: null,
           bicepLeft: null,
@@ -285,6 +300,11 @@
         name: '',
         weight: null,
         height: null,
+        workoutsPerWeek: 5,
+        notifications: {
+    dailyReminders: true,
+    reminderTime: '20:00' // Default to 8:00 PM
+  },
         measurements: {
           chest: null,
           bicepLeft: null,
@@ -492,5 +512,16 @@ ion-input {
   padding-bottom: 80px;
   --background: var(--ion-color-primary);
   --color: var(--ion-color-primary-contrast);
+}
+.fixed-label {
+  width: 150px;
+  min-width: 200px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.custom-toolbar{
+  padding-top: 24px;
 }
   </style>

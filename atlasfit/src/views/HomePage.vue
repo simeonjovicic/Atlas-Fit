@@ -1,8 +1,8 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Dashboard</ion-title>
+      <ion-toolbar class="custom-toolbar"> 
+        <ion-title class="custom-title">Dashboard</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -72,18 +72,26 @@
           </div>
           
           <div class="graph-container">
-            <div class="graph-y-axis">
-              <div v-for="n in 6" :key="n" class="y-label">{{ 6 - n }}</div>
-            </div>
-            <div class="graph-content">
-              <div v-for="(week, index) in displayedWeeks" :key="index" class="graph-bar-container">
-                <div class="graph-bar" :style="{ height: calculateBarHeight(week.count) }">
-                  <div class="bar-value" v-if="week.count > 0">{{ week.count }}</div>
-                </div>
-                <div class="graph-x-label">{{ week.label }}</div>
-              </div>
-            </div>
-          </div>
+  <div class="graph-y-axis">
+    <div v-for="n in 6" :key="n" class="y-label">{{ 6 - n }}</div>
+  </div>
+  <div class="graph-content">
+    <!-- Add target line here -->
+    <div 
+      v-if="workoutsPerWeekTarget > 0" 
+      class="target-line" 
+      :style="{ bottom: `${(workoutsPerWeekTarget / 6) * 180 + 33}px` }"
+    >
+      <span class="target-label">Ziel: {{ workoutsPerWeekTarget }}</span>
+    </div>
+    
+    <div v-for="(week, index) in displayedWeeks" :key="index" class="graph-bar-container">
+      <div class="graph-bar" :style="{ height: calculateBarHeight(week.count) }">
+      </div>
+      <div class="graph-x-label">{{ week.label }}</div>
+    </div>
+  </div>
+</div>
         </div>
 
         <div class="recent-workouts-card">
@@ -177,6 +185,7 @@ export default defineComponent({
     IonRefresherContent
   },
   setup() {
+    const workoutsPerWeekTarget = ref(0);
     const completedWorkouts = ref<CompletedWorkout[]>([]);
     const selectedPeriod = ref('month');
     const isLoading = ref(false);
@@ -191,6 +200,7 @@ export default defineComponent({
       if (savedProfile) {
         const profile = JSON.parse(savedProfile);
         userName.value = profile.name || 'User';
+        workoutsPerWeekTarget.value = profile.workoutsPerWeek || 0;
       }
     };
 
@@ -262,6 +272,7 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
       isLoading.value = true;
       try {
         const savedWorkouts = localStorage.getItem('completedWorkouts');
+        console.log('Retrieved workouts:', savedWorkouts);
         if (savedWorkouts) {
           completedWorkouts.value = JSON.parse(savedWorkouts);
         } else {
@@ -322,85 +333,104 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     });
 
     const getWeeksInPeriod = (periodType: string) => {
-      const weeks: WeekData[] = [];
-      const now = new Date();
-      let startDate: Date;
-      
-      switch (periodType) {
-        case 'month':
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 28);
-          break;
-        case '3months':
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 84);
-          break;
-        case 'year':
-          startDate = new Date(now);
-          startDate.setFullYear(now.getFullYear() - 1);
-          break;
-        default:
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 28);
-      }
-      
-      const startMonday = new Date(startDate);
-      startMonday.setDate(startMonday.getDate() - (startMonday.getDay() - 1 + 7) % 7);
-      startMonday.setHours(0, 0, 0, 0);
-      
-      const endMonday = new Date(now);
-      endMonday.setDate(endMonday.getDate() - (endMonday.getDay() - 1 + 7) % 7);
-      endMonday.setHours(0, 0, 0, 0);
-      
-      let numWeeks = Math.ceil((endMonday.getTime() - startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
-      
-      const skipWeeks = periodType === 'year' ? Math.floor(numWeeks / 12) : 1;
-      
-      let weekStart = new Date(startMonday);
-      while (weekStart <= now) {
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
-        
-        const label = `${weekStart.getDate()}.${weekStart.getMonth() + 1}.`;
-        
-        weeks.push({
-          startDate: new Date(weekStart),
-          endDate: new Date(weekEnd),
-          label,
-          count: 0
-        });
-        
-        weekStart.setDate(weekStart.getDate() + 7 * skipWeeks);
-      }
-      
-      return weeks.slice(-8);
-    };
+  const weeks: WeekData[] = [];
+  const now = new Date();
+  let startDate: Date;
+  
+  // Determine start date based on selected period
+  switch (periodType) {
+    case 'month':
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 28); // 4 weeks back
+      break;
+    case '3months':
+      startDate = new Date(now);
+      startDate.setMonth(now.getMonth() - 3); // 3 months back
+      break;
+    case 'year':
+      startDate = new Date(now);
+      startDate.setFullYear(now.getFullYear() - 1); // 1 year back
+      break;
+    default:
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 28);
+  }
+  
+  // Adjust to start of week (Monday)
+  const dayOfWeek = startDate.getDay() || 7; // Convert Sunday (0) to 7
+  if (dayOfWeek !== 1) { // If not Monday
+    startDate.setDate(startDate.getDate() - (dayOfWeek - 1)); // Go back to Monday
+  }
+  startDate.setHours(0, 0, 0, 0);
+  
+  // Generate weekly ranges up to current date
+  let currentWeekStart = new Date(startDate);
+  
+  while (currentWeekStart <= now) {
+    const weekEnd = new Date(currentWeekStart);
+    weekEnd.setDate(currentWeekStart.getDate() + 6); // Sunday
+    weekEnd.setHours(23, 59, 59, 999);
     
-    const displayedWeeks = computed(() => {
-      const weeks = getWeeksInPeriod(selectedPeriod.value);
-      
-      completedWorkouts.value.forEach(workout => {
-        const workoutDate = new Date(workout.completedAt);
-        
-        for (const week of weeks) {
-          if (workoutDate >= week.startDate && workoutDate <= week.endDate) {
-            week.count++;
-            break;
-          }
-        }
-      });
-      
-      return weeks;
+    // Format as DD.MM.
+    const label = `${currentWeekStart.getDate()}.${currentWeekStart.getMonth() + 1}.`;
+    
+    weeks.push({
+      startDate: new Date(currentWeekStart),
+      endDate: new Date(weekEnd),
+      label,
+      count: 0
     });
     
-    const calculateBarHeight = (count: number) => {
-      const maxHeight = 100; // Max height in percentage
-      const maxCount = 6; // Maximum number on the Y-axis
-      const cappedCount = Math.min(count, maxCount);
-      const height = (cappedCount / maxCount) * maxHeight;
-      return `${height}%`;
-    };
+    // Move to next Monday
+    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+  }
+  
+  // For year view, reduce number of weeks to avoid overcrowding
+  if (periodType === 'year') {
+    // Return ~12 evenly spaced weeks
+    const step = Math.max(1, Math.floor(weeks.length / 12));
+    return weeks.filter((_, index) => index % step === 0).slice(-8);
+  }
+  
+  // Return the last 8 weeks for other views
+  return weeks.slice(-8);
+};
     
+    const displayedWeeks = computed(() => {
+  const weeks = getWeeksInPeriod(selectedPeriod.value);
+  
+  // Reset counts
+  weeks.forEach(week => week.count = 0);
+  
+  // Count workouts for each week
+  completedWorkouts.value.forEach(workout => {
+    const workoutDate = new Date(workout.completedAt);
+    
+    for (const week of weeks) {
+      // Check if workout falls within this week
+      if (workoutDate >= week.startDate && workoutDate <= week.endDate) {
+        week.count++;
+        break;
+      }
+    }
+  });
+  
+  console.log('Weeks with workout counts:', weeks);
+  return weeks;
+});
+    const checkAndRefreshWeeks = () => {
+  // Force refresh of the displayedWeeks computed property
+  selectedPeriod.value = selectedPeriod.value;
+  console.log("Refreshed week data:", displayedWeeks.value);
+};
+    
+   const calculateBarHeight = (count: number) => {
+  const maxHeight = 100; // Max height in percentage
+  const maxCount = 6; // Maximum number on the Y-axis
+  const cappedCount = Math.min(count, maxCount);
+  const height = (cappedCount / maxCount) * maxHeight;
+  return `${height}%`;
+};
     const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('de', {
@@ -411,6 +441,7 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     };
     
     onMounted(() => {
+      checkAndRefreshWeeks();
       // Fetch the user's name when the component is mounted
       fetchUserName();
       loadCompletedWorkouts();
@@ -418,6 +449,7 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
     });
 
     onActivated(() => {
+       checkAndRefreshWeeks();
       // Fetch the user's name when the component is activated
       fetchUserName();
       loadCompletedWorkouts();
@@ -453,7 +485,8 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
       barbellOutline,
       refreshHistory,
       isLoading,
-      userName // Return the user's name
+      userName, // Return the user's name
+      workoutsPerWeekTarget
     };
   }
 });
@@ -616,6 +649,7 @@ h2 {
   justify-content: space-between;
   flex-grow: 1;
   height: 100%;
+  position: relative;
 }
 
 .graph-bar-container {
@@ -640,12 +674,6 @@ h2 {
   align-items: flex-start;
 }
 
-.bar-value {
-  position: absolute;
-  top: -20px;
-  color: var(--ion-color-dark);
-  font-size: 12px;
-}
 
 .graph-x-label {
   color: var(--ion-color-medium);
@@ -715,5 +743,28 @@ h2 {
   margin: 0;
   font-size: 24px;
   color: var(--ion-color-dark);
+}
+
+.target-line {
+  position: absolute;
+  width: 103%;
+  height: 1.5px;
+  background-color: #FF9800;
+  left: 0;
+  z-index: 1;
+}
+
+.custom-toolbar{
+  padding-top: 24px;
+}
+
+.target-label {
+  position: absolute;
+  right: 0;
+  padding: 2px 5px;
+  background-color: #FF9800;
+  color: white;
+  font-size: 10px;
+  border-radius: 3px;
 }
 </style>

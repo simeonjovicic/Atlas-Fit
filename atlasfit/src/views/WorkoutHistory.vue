@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="custom-toolbar">
         <ion-title>Verlauf</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -14,7 +14,15 @@
         </ion-refresher-content>
       </ion-refresher>
       
-      <div class="history-container">
+      <!-- Empty state message when no workouts exist -->
+      <div v-if="isHistoryEmpty" class="empty-state">
+        <ion-icon :icon="barbellOutline" class="empty-state-icon"></ion-icon>
+        <h2>Keine Workouts abgeschlossen</h2>
+        <p>Beende dein erstes Workout, um es hier anzuzeigen.</p>
+      </div>
+      
+      <!-- Workout history when data exists -->
+      <div v-else class="history-container">
         <div v-for="(monthData, month) in groupedWorkouts" :key="month" class="month-section">
           <div class="month-header">
             <h2>{{ month }}</h2>
@@ -174,6 +182,11 @@ export default defineComponent({
       return grouped;
     });
     
+    // Computed property to check if there are no workouts
+    const isHistoryEmpty = computed(() => {
+      return completedWorkouts.value.length === 0;
+    });
+    
     const formatDate = (dateString: string) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('de', {
@@ -197,6 +210,7 @@ export default defineComponent({
     
     return {
       groupedWorkouts,
+      isHistoryEmpty,
       formatDate,
       refreshHistory,
       timeOutline,
@@ -215,6 +229,37 @@ export default defineComponent({
   height: 100%; /* Ensure the container takes up the full height */
   overflow-y: auto;
   background-color: var(--ion-color-light);
+}
+
+/* Empty state styling */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 32px;
+  text-align: center;
+  color: var(--ion-color-medium);
+  background-color: var(--ion-color-light); /* Match the grey background */
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  color: var(--ion-color-medium);
+}
+
+.empty-state h2 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  color: var(--ion-color-dark); /* Ensure consistent text color */
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ion-color-medium); /* Ensure consistent text color */
 }
 
 .navbar-spacer {
@@ -313,5 +358,8 @@ export default defineComponent({
 
 .stat ion-icon {
   margin-right: 6px;
+}
+.custom-toolbar{
+  padding-top: 24px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <ion-page>
       <ion-header>
-        <ion-toolbar>
+        <ion-toolbar class="custom-toolbar">
           <ion-buttons slot="start">
             <ion-button @click="confirmExitWorkout">
               <ion-icon :icon="chevronDown"></ion-icon>
@@ -713,5 +713,8 @@ const endWorkout = () => {
     --color: #347ad6;
     font-weight: bold;
     margin: 10px 0;
+  }
+  .custom-toolbar{
+    padding-top: 24px;
   }
   </style>

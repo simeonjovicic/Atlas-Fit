@@ -32,6 +32,7 @@ export default defineComponent({
 .custom-header {
   --ion-toolbar-background: transparent; /* Makes toolbar transparent */
   box-shadow: none; /* Removes shadow */
+  padding-top: 12px;
 }
 
 </style>

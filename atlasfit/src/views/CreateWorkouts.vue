@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="custom-toolbar">
         <ion-title>Create Workout</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -42,13 +42,13 @@
       <!-- First Modal: Create Workout -->
       <ion-modal :is-open="isWorkoutCreationModalOpen" @didDismiss="closeWorkoutCreationModal" class="workout-modal">
         <ion-header>
-          <ion-toolbar>
+          <ion-toolbar class="custom-newworkout-toolbar">
             <ion-buttons slot="start">
               <ion-button @click="closeWorkoutCreationModal">
                 <ion-icon :icon="closeOutline"></ion-icon>
               </ion-button>
             </ion-buttons>
-            <ion-title>New template</ion-title>
+            <ion-title>New workout</ion-title>
             <ion-buttons slot="end">
               <ion-button @click="saveNewWorkout" :disabled="!canSaveWorkout">
                 <ion-icon :icon="checkmarkOutline"></ion-icon>
@@ -131,7 +131,7 @@
       <!-- Second Modal: Add Exercises -->
       <ion-modal :is-open="isAddExercisesModalOpen" @didDismiss="closeAddExercisesModal" class="exercises-modal">
         <ion-header>
-          <ion-toolbar>
+          <ion-toolbar class="custom-addexercises-toolbar">
             <ion-buttons slot="start">
               <ion-button @click="closeAddExercisesModal">
                 <ion-icon :icon="closeOutline"></ion-icon>
@@ -149,19 +149,24 @@
           <ion-searchbar placeholder="Search exercises" v-model="exerciseSearchTerm" class="exercise-search"></ion-searchbar>
           
           <ion-list class="exercises-list">
-            <ion-item-divider sticky>
-              <ion-label>Select exercises</ion-label>
-            </ion-item-divider>
-            <ion-item v-for="exercise in filteredExercises" :key="exercise.name" class="exercise-item">
-              <ion-label>
-                <h2>{{ exercise.name }}</h2>
-                <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
-              </ion-label>
-              <ion-checkbox
-                :checked="isExerciseSelected(exercise)"
-                @ionChange="toggleExerciseSelection(exercise)"
-              ></ion-checkbox>
-            </ion-item>
+           
+            <ion-item 
+  v-for="exercise in filteredExercises" 
+  :key="exercise.name" 
+  class="exercise-item"
+  @click="toggleExerciseSelection(exercise)"
+  button
+>
+  <ion-label class="exercise-label">
+    <h2>{{ exercise.name }}</h2>
+    <p>{{ exercise.muscle }} - {{ exercise.equipment }}</p>
+  </ion-label>
+  <ion-checkbox
+    slot="end"
+    :checked="isExerciseSelected(exercise)"
+    class="exercise-checkbox"
+  ></ion-checkbox>
+</ion-item>
           </ion-list>
         </ion-content>
       </ion-modal>
@@ -169,7 +174,7 @@
       <!-- Modal for viewing workout details -->
       <ion-modal :is-open="isWorkoutDetailsModalOpen" @didDismiss="closeWorkoutDetailsModal" class="details-modal">
         <ion-header>
-          <ion-toolbar>
+          <ion-toolbar class="custom-workoutdetails-toolbar">
             <ion-buttons slot="start">
               <ion-button @click="closeWorkoutDetailsModal">
                 <ion-icon :icon="closeOutline"></ion-icon>
@@ -215,6 +220,10 @@
               <ion-icon :icon="createOutline" slot="start"></ion-icon>
               <ion-label>Edit</ion-label>
             </ion-item>
+            <ion-item button @click="shareWorkout">
+  <ion-icon :icon="shareOutline" slot="start"></ion-icon>
+  <ion-label>Share</ion-label>
+</ion-item>
             <ion-item button @click="duplicateWorkout">
               <ion-icon :icon="copyOutline" slot="start"></ion-icon>
               <ion-label>Duplicate</ion-label>
@@ -272,6 +281,7 @@ import {
   copyOutline,
   settingsOutline,
   lockClosedOutline,
+  shareOutline
 } from 'ionicons/icons';
 
 import exercisesData from '@/resources/exercises.json';
@@ -344,6 +354,60 @@ export default defineComponent({
     let nextWorkoutId = 1;
     const editingWorkoutId = ref(null);
     const router = useRouter();
+
+    // Share workout
+const shareWorkout = async () => {
+  if (selectedWorkout.value) {
+    try {
+      const workoutData = JSON.stringify(selectedWorkout.value, null, 2);
+      
+      // Create a blob from the workout data
+      const blob = new Blob([workoutData], { type: 'application/json' });
+      const fileUrl = URL.createObjectURL(blob);
+      
+      // Create a safe filename
+      const fileName = `${selectedWorkout.value.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_workout.json`;
+      
+      // Try using the Web Share API if available
+      if (navigator.share) {
+        const file = new File([blob], fileName, { type: 'application/json' });
+        await navigator.share({
+          title: `${selectedWorkout.value.name} Workout`,
+          text: `Check out my "${selectedWorkout.value.name}" workout!`,
+          files: [file]
+        });
+      } else {
+        // Fallback to download if Web Share API is not available
+        const a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        const toast = await toastController.create({
+          message: 'Workout exported successfully!',
+          duration: 2000,
+          position: 'bottom',
+          color: 'success'
+        });
+        toast.present();
+      }
+    } catch (error) {
+      console.error('Error sharing workout:', error);
+      
+      const toast = await toastController.create({
+        message: 'Failed to share workout.',
+        duration: 2000,
+        position: 'bottom',
+        color: 'danger'
+      });
+      toast.present();
+    } finally {
+      closeWorkoutOptionsPopover();
+    }
+  }
+};
 
     // Filter exercises based on search term
     const filteredExercises = computed(() => {
@@ -631,6 +695,8 @@ export default defineComponent({
     });
 
     return {
+      shareWorkout,
+  shareOutline,
       exercisesData,
       isWorkoutCreationModalOpen,
       isAddExercisesModalOpen,
@@ -790,8 +856,30 @@ ion-card-subtitle {
 }
 
 .exercise-item {
-  --background: transparent;
-  margin-bottom: 5px;
+  --inner-padding-end: 16px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+}
+
+.exercise-label {
+  margin-right: 16px;
+}
+
+.exercise-checkbox {
+  margin-left: auto;
+  --size: 22px;
+  --border-radius: 4px;
+}
+
+/* Make the exercise names stand out more */
+.exercise-item h2 {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--ion-color-dark);
+}
+
+.exercise-item p {
+  font-size: 13px;
 }
 
 .exercise-header {
@@ -953,5 +1041,17 @@ ion-card-subtitle {
 .options-popover ion-item {
   --background: transparent;
   --color: var(--ion-color-dark);
+}
+.custom-toolbar{
+  padding-top: 24px;
+}
+.custom-workoutdetails-toolbar{
+  padding-top: 24px;
+}
+.custom-newworkout-toolbar{
+  padding-top: 24px;
+}
+.custom-addexercises-toolbar{
+  padding-top: 24px;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
-        <ion-title>Search Workouts</ion-title>
+      <ion-toolbar class="custom-toolbar">
+        <ion-title class="custom-title">Search Workouts</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -31,20 +31,20 @@
                 <ion-item-divider class="letter-divider">{{ letter }}</ion-item-divider>
                 
                 <template v-for="(exercise, index) in exercises" :key="exercise.name">
-  <ion-item class="custom-item" @click="openModal(exercise)">
-    <ion-label>
-      <h2 class="exercise-title">{{ exercise.name }}</h2>
-      <p class="muscle-name"><strong>{{ exercise.muscle }}</strong></p>
-    </ion-label>
-    <ion-icon
-      :icon="exercise.saved ? bookmarkSharp : bookmarkOutline"
-      slot="end"
-      class="bookmark-icon"
-      @click.stop="toggleBookmark(exercise)"
-    ></ion-icon>
-  </ion-item>
-  <div v-if="index === exercises.length - 1" class="group-padding"></div>
-</template>
+                  <ion-item class="custom-item" @click="openModal(exercise)">
+                    <ion-label>
+                      <h2 class="exercise-title">{{ exercise.name }}</h2>
+                      <p class="muscle-name"><strong>{{ exercise.muscle }}</strong></p>
+                    </ion-label>
+                    <ion-icon
+                      :icon="exercise.saved ? bookmarkSharp : bookmarkOutline"
+                      slot="end"
+                      class="bookmark-icon"
+                      @click.stop="toggleBookmark(exercise)"
+                    ></ion-icon>
+                  </ion-item>
+                  <div v-if="index === exercises.length - 1" class="group-padding"></div>
+                </template>
               </template>
             </ion-list>
           </ion-col>
@@ -137,7 +137,6 @@
 </template>
 
 <script>
-
 import { ref, computed, watch } from "vue";
 import {
   IonPage,
@@ -305,19 +304,21 @@ export default {
   font-size: 1.2em;
   font-weight: bold;
   margin-bottom: 5px;
+  color: var(--ion-color-dark); /* Ensure text color is visible */
 }
 
 .muscle-name {
   text-transform: capitalize;
+  color: var(--ion-color-medium); /* Ensure text color is visible */
 }
 
 .custom-list {
-  background: var(--ion-background-color);
+  background: var(--ion-background-color); /* Use theme background color */
 }
 
 .custom-item {
-  --background: var(--ion-background-color);
-  color: var(--ion-text-color);
+  --background: var(--ion-background-color); /* Use theme background color */
+  color: var(--ion-text-color); /* Ensure text color is visible */
 }
 
 .letter-divider {
@@ -325,7 +326,7 @@ export default {
   font-size: 2.4em;
   font-weight: bold;
   background: transparent;
-  color: var(--ion-text-color);
+  color: var(--ion-text-color); /* Ensure text color is visible */
   padding: 8px 16px;
 }
 
@@ -335,7 +336,7 @@ export default {
 
 .bookmark-icon {
   font-size: 1.4em;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-primary); /* Use theme primary color */
 }
 
 /* Modal specific styles */
@@ -355,12 +356,12 @@ export default {
   font-size: 2em;
   font-weight: 700;
   margin: 0 0 8px 0;
-  color: var(--ion-color-dark);
+  color: var(--ion-color-dark); /* Ensure text color is visible */
 }
 
 .exercise-muscle-badge {
   display: inline-block;
-  background-color: var(--ion-color-primary);
+  background-color: var(--ion-color-primary); /* Use theme primary color */
   color: white;
   font-weight: 600;
   padding: 4px 12px;
@@ -383,27 +384,27 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-light); /* Use theme light color */
   border-radius: 12px;
   padding: 16px;
 }
 
 .stat-icon {
   font-size: 1.6em;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-primary); /* Use theme primary color */
   margin-bottom: 8px;
 }
 
 .stat-label {
   font-size: 0.9em;
-  color: var(--ion-color-medium);
+  color: var(--ion-color-medium); /* Ensure text color is visible */
   margin-bottom: 4px;
 }
 
 .stat-value {
   font-size: 1.1em;
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: var(--ion-color-dark); /* Ensure text color is visible */
   text-transform: capitalize;
 }
 
@@ -412,14 +413,14 @@ export default {
   align-items: center;
   font-size: 1.4em;
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: var(--ion-color-dark); /* Ensure text color is visible */
   margin: 0 0 16px 0;
 }
 
 .section-icon {
   margin-right: 8px;
   font-size: 1.2em;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-primary); /* Use theme primary color */
 }
 
 .instructions-section {
@@ -431,7 +432,7 @@ export default {
 .instructions-text {
   font-size: 1.1em;
   line-height: 1.6;
-  color: var(--ion-color-dark);
+  color: var(--ion-color-dark); /* Ensure text color is visible */
 }
 
 .recommendations-section {
@@ -440,7 +441,7 @@ export default {
 }
 
 .recommendation-list {
-  background-color: var(--ion-color-light);
+  background-color: var(--ion-color-light); /* Use theme light color */
   border-radius: 12px;
   overflow: hidden;
 }
@@ -462,11 +463,11 @@ export default {
 
 .recommendation-label {
   font-weight: 600;
-  color: var(--ion-color-dark);
+  color: var(--ion-color-dark); /* Ensure text color is visible */
 }
 
 .recommendation-value {
-  color: var(--ion-color-medium);
+  color: var(--ion-color-medium); /* Ensure text color is visible */
 }
 
 .action-buttons {
@@ -483,5 +484,8 @@ ion-button {
 .watch-button {
   --background: var(--ion-color-light);
   --color: var(--ion-color-dark);
+}
+.custom-toolbar{
+  padding-top: 24px;
 }
 </style>
