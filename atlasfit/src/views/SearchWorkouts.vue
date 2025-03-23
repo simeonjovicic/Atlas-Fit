@@ -295,6 +295,16 @@ export default {
 </script>
 
 <style scoped>
+
+
+ion-content::part(scroll) {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 .error-message {
   color: red;
   text-align: center;
@@ -454,7 +464,7 @@ export default {
 }
 
 .navbar-spacer {
-  height: 56px; /* Adjust this value to match your navbar's height */
+  height: 20px; /* Adjust this value to match your navbar's height */
 }
 
 .recommendation-item:last-child {

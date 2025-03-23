@@ -199,8 +199,8 @@
       const completedSets = ref<Record<string, boolean>>({});
       let timerInterval: number | null = null;
       let restTimerInterval: number | null = null;
-      const setSound = new Audio('/sounds/lebron-james-thats-to-easy.mp3');
-      const endWorkoutSound = new Audio('/sounds/you-are-my-sunshine-dark-lebron-james.mp3');
+      const setSound = new Audio('/sounds/mixkit-achievement-bell-600.wav');
+      const endWorkoutSound = new Audio('/sounds/success-fanfare-trumpets-6185.mp3');
   
       const currentExercise = computed(() => {
         if (!workout.value || !workout.value.exercises.length) return null;

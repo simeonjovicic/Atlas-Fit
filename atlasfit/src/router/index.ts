@@ -6,7 +6,6 @@ import SearchWorkouts from '../views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import WorkoutHistory from '@/views/WorkoutHistory.vue';
-import SettingsView from '@/views/SettingsView.vue';
 import WelcomePage from '@/views/WelcomePage.vue';
 
 
@@ -49,11 +48,6 @@ const routes: Array<RouteRecordRaw> = [
     path: '/history',
     name: 'WorkoutHistory',
     component: WorkoutHistory
-  },
-  {
-    path: '/edit',
-    name: 'SettingsView.vue',
-    component: SettingsView
   },
   {
      path: '/welcome',

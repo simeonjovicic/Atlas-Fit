@@ -2,7 +2,7 @@
   <ion-header v-if="!$route.meta.hideGlobalHeader" class="custom-header">
     <ion-toolbar class="custom-header">
       <ion-buttons slot="end">
-        <ion-button @click="goToSettings">
+        <ion-button @click="openSettingsMenu">
           <ion-icon :icon="settingsOutline"></ion-icon>
         </ion-button>
       </ion-buttons>
@@ -14,16 +14,16 @@
 import { defineComponent } from "vue";
 import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon } from "@ionic/vue";
 import { settingsOutline } from "ionicons/icons";
-import { useRouter } from "vue-router";
+import { menuController } from "@ionic/vue";
 
 export default defineComponent({
   components: { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon },
   setup() {
-    const router = useRouter();
-    const goToSettings = () => {
-      router.push("/edit");
+    const openSettingsMenu = async () => {
+      await menuController.open('settings-menu');
     };
-    return { settingsOutline, goToSettings };
+    
+    return { settingsOutline, openSettingsMenu };
   },
 });
 </script>
@@ -34,5 +34,4 @@ export default defineComponent({
   box-shadow: none; /* Removes shadow */
   padding-top: 12px;
 }
-
 </style>

@@ -65,6 +65,11 @@
           </div>
         </div>
       </div>
+      
+      <!-- Hidden audio element for fanfare -->
+      <audio ref="fanfareSound" preload="auto">
+        <source src="/sounds/magic-3glitterarrival-45359.mp3" type="audio/mpeg">
+      </audio>
     </ion-content>
   </ion-page>
 </template>
@@ -92,6 +97,7 @@ export default defineComponent({
   setup() {
     const name = ref('');
     const workoutsPerWeek = ref(3); // Default value
+    const fanfareSound = ref(null);
     
     // Slider functionality
     const sliderPosition = ref(0);
@@ -178,6 +184,9 @@ export default defineComponent({
     onMounted(() => {
       // Update slider width on resize
       window.addEventListener('resize', updateSliderConstraints);
+      
+      // Play fanfare sound when component is mounted
+      playFanfare();
     });
     
     onUnmounted(() => {
@@ -189,6 +198,26 @@ export default defineComponent({
     const updateSliderConstraints = () => {
       // Reset position when resizing to avoid issues
       sliderPosition.value = 0;
+    };
+    
+    const playFanfare = () => {
+      // Small timeout to ensure audio is ready and to give visual elements time to render
+      setTimeout(() => {
+        if (fanfareSound.value) {
+          // Set volume to a comfortable level
+          fanfareSound.value.volume = 0.7;
+          
+          // Play the sound with a promise and catch any errors (mobile browsers may block autoplay)
+          const playPromise = fanfareSound.value.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.log('Autoplay prevented:', error);
+              // You could add a play button here if autoplay is not allowed
+            });
+          }
+        }
+      }, 500);
     };
 
     const continueToApp = () => {
@@ -246,7 +275,8 @@ export default defineComponent({
       startSlide,
       moveSlide,
       endSlide,
-      arrowForwardOutline
+      arrowForwardOutline,
+      fanfareSound
     };
   }
 });
