@@ -4,8 +4,8 @@ import { Preferences } from '@capacitor/preferences';
 
 export class NotificationService {
   // Schedule daily notifications at 8:00 PM
-  private static NOTIFICATION_HOUR = 14;
-  private static NOTIFICATION_MINUTE = 45;
+  private static NOTIFICATION_HOUR = 10;
+  private static NOTIFICATION_MINUTE = 32;
   
   // Initialize notifications when app starts
   public static async initialize(): Promise<void> {
