@@ -24,7 +24,7 @@
           @click="activeTab = 'analytics'"
         >
           <ion-icon :icon="analyticsOutline" class="tab-icon"></ion-icon>
-          <span>Analytics</span>
+          <span>Analyse</span>
         </div>
       </div>
       
