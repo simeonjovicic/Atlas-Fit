@@ -505,22 +505,36 @@ export default defineComponent({
 
     // Get best weight and reps for selected exercise
     const getExerciseBestWeight = (exerciseName: string) => {
-      let bestWeight = 0;
-      
-      completedWorkouts.value.forEach(workout => {
-        workout.exercises.forEach(exercise => {
-          if (exercise.name === exerciseName) {
-            exercise.sets.forEach(set => {
-              if (set.weight > bestWeight) {
-                bestWeight = set.weight;
-              }
-            });
+  let bestWeight = 0;
+  
+  completedWorkouts.value.forEach(workout => {
+    workout.exercises.forEach(exercise => {
+      if (exercise.name === exerciseName) {
+        // First check individual sets data
+        exercise.sets.forEach(set => {
+          if (set.weight > bestWeight) {
+            bestWeight = set.weight;
           }
         });
-      });
-      
-      return bestWeight;
-    };
+        
+        // Also check if there's any best set information we can parse
+        // This is a fallback in case the sets array doesn't contain all data
+        if (exercise.bestSet) {
+          // Try to parse the best set string (format might be like "80 kg × 8")
+          const weightMatch = exercise.bestSet.match(/(\d+(?:\.\d+)?)\s*kg/);
+          if (weightMatch && weightMatch[1]) {
+            const parsedWeight = parseFloat(weightMatch[1]);
+            if (!isNaN(parsedWeight) && parsedWeight > bestWeight) {
+              bestWeight = parsedWeight;
+            }
+          }
+        }
+      }
+    });
+  });
+  
+  return bestWeight;
+};
 
     const getExerciseBestReps = (exerciseName: string) => {
       let bestReps = 0;
