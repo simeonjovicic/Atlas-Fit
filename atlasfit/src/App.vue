@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <HeaderNav v-if="!isFirstLaunch" />
+    <HeaderNav v-if="showNavigation" />
     
     <!-- Settings Side Menu -->
     <ion-menu side="end" content-id="main-content" menu-id="settings-menu">
@@ -38,11 +38,21 @@
             <ion-label color="danger">Alle Daten löschen</ion-label>
           </ion-item>
         </ion-list>
+        
+        <ion-list class="settings-list account-section" v-if="currentUser">
+          <ion-item-divider>
+            <ion-label>Account</ion-label>
+          </ion-item-divider>
+          <ion-item button @click="handleLogout" detail>
+            <ion-icon :icon="logOutOutline" slot="start"></ion-icon>
+            <ion-label>Abmelden</ion-label>
+          </ion-item>
+        </ion-list>
       </ion-content>
     </ion-menu>
     
     <ion-router-outlet id="main-content"></ion-router-outlet>
-    <FooterNav v-if="!isFirstLaunch" />
+    <FooterNav v-if="showNavigation" />
   </ion-app>
 </template>
 
@@ -50,13 +60,14 @@
 import { IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, 
          IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle,
          IonButtons, IonButton, IonIcon, IonItemDivider, alertController } from "@ionic/vue";
-import { closeOutline, downloadOutline, trashOutline } from "ionicons/icons";
+import { closeOutline, downloadOutline, trashOutline, logOutOutline } from "ionicons/icons";
 import { menuController } from "@ionic/vue";
 import FooterNav from "./components/FooterNav.vue";
 import HeaderNav from "./components/HeaderNav.vue";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch, computed } from "vue";
 import { NotificationService } from "./components/NotificationService";
 import router from "./router";
+import { authService } from "./services/authService";
 
 export default defineComponent({
   name: "App",
@@ -82,6 +93,15 @@ export default defineComponent({
   setup() {
     const isFirstLaunch = ref(true);
     const notificationsEnabled = ref(false);
+    const currentUser = ref(null);
+    const currentRoute = ref(router.currentRoute.value.path);
+    
+    // Computed property to determine if navigation should be shown
+    const showNavigation = computed(() => {
+      const publicRoutes = ['/login', '/register', '/welcome'];
+      const isPublicRoute = publicRoutes.includes(currentRoute.value);
+      return !isPublicRoute && currentUser.value !== null;
+    });
 
     const saveSetting = () => {
       localStorage.setItem('notificationsEnabled', JSON.stringify(notificationsEnabled.value));
@@ -154,15 +174,55 @@ export default defineComponent({
       router.replace('/welcome');
     };
 
+    // Logout user
+    const handleLogout = async () => {
+      const alert = await alertController.create({
+        header: 'Abmelden?',
+        message: 'Möchtest du dich wirklich abmelden?',
+        buttons: [
+          {
+            text: 'Abbrechen',
+            role: 'cancel',
+          },
+          {
+            text: 'Abmelden',
+            role: 'confirm',
+            handler: async () => {
+              try {
+                await authService.logout();
+                await closeSettingsMenu();
+                router.replace('/login');
+              } catch (error) {
+                console.error('Logout error:', error);
+              }
+            },
+          },
+        ],
+      });
+
+      await alert.present();
+    };
+
     onMounted(async () => {
+      // Set up authentication state observer
+      authService.onAuthChange((user) => {
+        currentUser.value = user;
+        console.log('Auth state changed:', user ? user.email : 'No user');
+        
+        // If user logged out, redirect to login
+        if (!user && router.currentRoute.value.meta.requiresAuth) {
+          router.replace('/login');
+        }
+      });
+
       // Initialize notification service when app starts
       await NotificationService.initialize();
       
       // Check if this is the first launch
       const firstLaunch = checkFirstLaunchStatus();
       
-      // Redirect to welcome page if first launch
-      if (firstLaunch) {
+      // Redirect to welcome page if first launch and no user
+      if (firstLaunch && !authService.getCurrentUser()) {
         router.replace('/welcome');
       }
 
@@ -176,7 +236,8 @@ export default defineComponent({
     // Watch for route changes to update header/footer visibility
     watch(
       () => router.currentRoute.value.path,
-      () => {
+      (newPath) => {
+        currentRoute.value = newPath;
         // Recheck first launch status after navigation
         checkFirstLaunchStatus();
       }
@@ -184,14 +245,18 @@ export default defineComponent({
 
     return {
       isFirstLaunch,
+      showNavigation,
       closeOutline,
       downloadOutline,
       trashOutline,
+      logOutOutline,
       closeSettingsMenu,
       notificationsEnabled,
       saveSetting,
       exportAllData,
-      showClearDataConfirm
+      showClearDataConfirm,
+      handleLogout,
+      currentUser
     };
   }
 });
@@ -230,6 +295,10 @@ ion-menu.ios ion-item {
 }
 
 .data-section {
+  margin-top: 30px;
+}
+
+.account-section {
   margin-top: 30px;
 }
 

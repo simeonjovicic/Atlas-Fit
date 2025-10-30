@@ -437,6 +437,8 @@ import {
 } from 'ionicons/icons';
 import { defineComponent, ref, computed } from 'vue';
 import profilePicture from '@/resources/default-profile.jpg';
+import { profileService } from '@/services/profileService';
+import { toastController } from '@ionic/vue';
 
 export default defineComponent({
   name: 'ProfilePage',
@@ -490,26 +492,35 @@ export default defineComponent({
 
     // Fetch profile data
     const fetchProfile = async () => {
-      // Fetch the profile data from localStorage
-      const savedProfile = localStorage.getItem('profile');
-      const savedProfilePhoto = localStorage.getItem('profilePhoto');
-      const savedProfileHistory = localStorage.getItem('profileHistory');
-
-      if (savedProfile && savedProfilePhoto) {
-        profile.value = JSON.parse(savedProfile);
-        profilePhoto.value = savedProfilePhoto;
-      } else {
-        // Simulate fetching data if not found in localStorage
-        setTimeout(() => {
+      try {
+        // Try to migrate from localStorage first (one-time)
+        await profileService.migrateFromLocalStorage();
+        
+        // Fetch the profile data from Firestore
+        const firestoreProfile = await profileService.getProfile();
+        
+        if (firestoreProfile) {
+          profile.value = {
+            name: firestoreProfile.name || '',
+            weight: firestoreProfile.weight,
+            height: firestoreProfile.height,
+            workoutsPerWeek: firestoreProfile.workoutsPerWeek,
+            measurements: firestoreProfile.measurements
+          };
+          
+          // Set profile photo URL
+          if (firestoreProfile.profilePhotoURL) {
+            profilePhoto.value = firestoreProfile.profilePhotoURL;
+          } else {
+            profilePhoto.value = profilePicture;
+          }
+        } else {
+          // Initialize empty profile
           profile.value = {
             name: '',
             weight: null,
             height: null,
-            workoutsPerWeek: 5,
-            notifications: {
-              dailyReminders: true,
-              reminderTime: '20:00' // Default to 8:00 PM
-            },
+            workoutsPerWeek: null,
             measurements: {
               chest: null,
               bicepLeft: null,
@@ -526,20 +537,24 @@ export default defineComponent({
             }
           };
           profilePhoto.value = profilePicture;
-
-          // Save the simulated data to localStorage
-          localStorage.setItem('profile', JSON.stringify(profile.value));
-          localStorage.setItem('profilePhoto', profilePhoto.value);
-        }, 500);
+        }
+        
+        // Load profile history
+        const history = await profileService.getProfileHistory();
+        profileHistory.value = history;
+        
+        // Initialize selected measurement
+        initializeSelectedMeasurement();
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        const toast = await toastController.create({
+          message: 'Fehler beim Laden des Profils',
+          duration: 3000,
+          position: 'top',
+          color: 'danger'
+        });
+        await toast.present();
       }
-      
-      // Load profile history if it exists
-      if (savedProfileHistory) {
-        profileHistory.value = JSON.parse(savedProfileHistory);
-      }
-      
-      // Initialize selected measurement
-      initializeSelectedMeasurement();
     };
 
     const selectImage = async () => {
@@ -548,21 +563,50 @@ export default defineComponent({
         buttons: [
           {
             text: 'Choose from Gallery',
-            handler: () => {
+            handler: async () => {
               // Create a file input element
               const input = document.createElement('input');
               input.type = 'file';
               input.accept = 'image/*';
               
               // When a file is selected
-              input.onchange = (event) => {
+              input.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (e) => {
-                    profilePhoto.value = e.target.result;
-                  };
-                  reader.readAsDataURL(file);
+                  try {
+                    // Show loading toast
+                    const loadingToast = await toastController.create({
+                      message: 'Bild wird hochgeladen...',
+                      duration: 0,
+                      position: 'top'
+                    });
+                    await loadingToast.present();
+                    
+                    // Upload to Firebase Storage
+                    const downloadURL = await profileService.uploadProfilePhoto(file);
+                    profilePhoto.value = downloadURL;
+                    
+                    // Close loading toast
+                    await loadingToast.dismiss();
+                    
+                    // Show success toast
+                    const successToast = await toastController.create({
+                      message: 'Profilbild erfolgreich hochgeladen!',
+                      duration: 2000,
+                      position: 'top',
+                      color: 'success'
+                    });
+                    await successToast.present();
+                  } catch (error) {
+                    console.error('Error uploading profile photo:', error);
+                    const errorToast = await toastController.create({
+                      message: 'Fehler beim Hochladen des Bildes',
+                      duration: 3000,
+                      position: 'top',
+                      color: 'danger'
+                    });
+                    await errorToast.present();
+                  }
                 }
               };
               
@@ -592,26 +636,43 @@ export default defineComponent({
         };
         
         // Add the new record to history
+        await profileService.addProfileHistoryEntry(historyRecord);
         profileHistory.value.push(historyRecord);
         
-        // Limit history to prevent excessive storage usage (optional)
+        // Limit local history display
         if (profileHistory.value.length > 100) {
           profileHistory.value = profileHistory.value.slice(-100);
         }
         
-        // Save the current profile and history to localStorage
-        localStorage.setItem('profile', JSON.stringify(profile.value));
-        localStorage.setItem('profilePhoto', profilePhoto.value);
-        localStorage.setItem('profileHistory', JSON.stringify(profileHistory.value));
+        // Save the current profile to Firestore
+        await profileService.saveProfile({
+          name: profile.value.name,
+          weight: profile.value.weight,
+          height: profile.value.height,
+          workoutsPerWeek: profile.value.workoutsPerWeek,
+          measurements: profile.value.measurements
+        });
 
         console.log('Saving profile:', profile.value);
         console.log('Profile history:', profileHistory.value);
 
-        // Simulate a successful save
-        alert('Profile updated successfully!');
+        // Show success toast
+        const toast = await toastController.create({
+          message: 'Profil erfolgreich aktualisiert!',
+          duration: 2000,
+          position: 'top',
+          color: 'success'
+        });
+        await toast.present();
       } catch (error) {
         console.error('Error saving profile', error);
-        alert('There was an error updating your profile. Please try again.');
+        const toast = await toastController.create({
+          message: 'Fehler beim Speichern des Profils',
+          duration: 3000,
+          position: 'top',
+          color: 'danger'
+        });
+        await toast.present();
       }
     };
     
