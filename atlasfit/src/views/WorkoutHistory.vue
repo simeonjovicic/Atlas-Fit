@@ -222,7 +222,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onActivated } from 'vue';
+import { defineComponent, ref, computed, onMounted, onActivated, onUnmounted } from 'vue';
 import { 
   IonPage, 
   IonHeader, 
@@ -247,27 +247,9 @@ import {
   scaleOutline,
   analyticsOutline
 } from 'ionicons/icons';
-
-interface CompletedSet {
-  reps: number;
-  weight: number;
-}
-
-interface CompletedExercise {
-  name: string;
-  completedSets: number;
-  sets: CompletedSet[];
-  bestSet: string;
-}
-
-interface CompletedWorkout {
-  id: number;
-  name: string;
-  completedAt: string;
-  duration: string;
-  exercises: CompletedExercise[];
-  totalWeight: number;
-}
+import { workoutHistoryService, type CompletedWorkout } from '@/services/workoutHistoryService';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/services/firebase';
 
 interface MonthData {
   workouts: CompletedWorkout[];
@@ -303,18 +285,23 @@ export default defineComponent({
     const activeTab = ref('history');
     const selectedExercise = ref('');
     
-    const loadCompletedWorkouts = () => {
-      const savedWorkouts = localStorage.getItem('completedWorkouts');
-      if (savedWorkouts) {
-        completedWorkouts.value = JSON.parse(savedWorkouts);
+    const loadCompletedWorkouts = async () => {
+      try {
+        const savedWorkouts = await workoutHistoryService.getCompletedWorkouts();
+        console.log('WorkoutHistory: Loaded workouts from Firebase:', savedWorkouts.length);
+        completedWorkouts.value = savedWorkouts;
+      } catch (error) {
+        console.error('Failed to load completed workouts from Firebase:', error);
+        // No fallback - only use Firebase for security
+        completedWorkouts.value = [];
       }
     };
     
-    const refreshHistory = (event?: CustomEvent) => {
-      loadCompletedWorkouts();
-      if (event) {
+    const refreshHistory = async (event?: CustomEvent) => {
+      await loadCompletedWorkouts();
+      if (event && event.target) {
         setTimeout(() => {
-          event.target.complete();
+          (event.target as any).complete();
         }, 500);
       }
     };
@@ -699,15 +686,38 @@ const getExerciseMaxVolume = (exerciseName: string) => {
         .slice(0, 5); // Top 5 exercises
     });
     
-    onMounted(() => {
-      loadCompletedWorkouts();
+    // Watch for auth changes to reload data when user switches
+    let unsubscribeAuth: (() => void) | null = null;
+    
+    onMounted(async () => {
+      await loadCompletedWorkouts();
       initializeSelectedExercise();
+      
+      // Watch for auth changes
+      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // Reload data when user changes
+          await loadCompletedWorkouts();
+          initializeSelectedExercise();
+        } else {
+          // Clear data when logged out
+          completedWorkouts.value = [];
+          selectedExercise.value = '';
+        }
+      });
     });
     
     // Add this hook to reload data when component is activated
-    onActivated(() => {
-      refreshHistory();
+    onActivated(async () => {
+      await refreshHistory();
       initializeSelectedExercise();
+    });
+    
+    // Cleanup auth watcher
+    onUnmounted(() => {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
     });
     
     return {

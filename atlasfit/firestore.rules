@@ -1,0 +1,37 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User-spezifische Daten
+    match /users/{userId} {
+      // Nur eigene Daten lesbar/schreibbar
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Profile
+      match /profile/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Workout Templates
+      match /workouts/{workoutId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Completed Workouts (Historie) - korrigiert zu workoutHistory
+      match /workoutHistory/{completedId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // User Settings (neu hinzugefügt)
+      match /settings/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Saved Exercises (neu hinzugefügt)
+      match /savedExercises/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
+

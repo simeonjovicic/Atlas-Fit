@@ -25,20 +25,6 @@
           </ion-item>
         </ion-list>
         
-        <ion-list class="settings-list data-section">
-          <ion-item-divider>
-            <ion-label>Datenverwaltung</ion-label>
-          </ion-item-divider>
-          <ion-item button @click="exportAllData" detail>
-            <ion-icon :icon="downloadOutline" slot="start"></ion-icon>
-            <ion-label>Alle Daten exportieren</ion-label>
-          </ion-item>
-          <ion-item button @click="showClearDataConfirm" class="danger-item" detail>
-            <ion-icon :icon="trashOutline" slot="start" color="danger"></ion-icon>
-            <ion-label color="danger">Alle Daten löschen</ion-label>
-          </ion-item>
-        </ion-list>
-        
         <ion-list class="settings-list account-section" v-if="currentUser">
           <ion-item-divider>
             <ion-label>Account</ion-label>
@@ -60,7 +46,7 @@
 import { IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, 
          IonTitle, IonContent, IonList, IonItem, IonLabel, IonToggle,
          IonButtons, IonButton, IonIcon, IonItemDivider, alertController } from "@ionic/vue";
-import { closeOutline, downloadOutline, trashOutline, logOutOutline } from "ionicons/icons";
+import { closeOutline, logOutOutline } from "ionicons/icons";
 import { menuController } from "@ionic/vue";
 import FooterNav from "./components/FooterNav.vue";
 import HeaderNav from "./components/HeaderNav.vue";
@@ -118,62 +104,6 @@ export default defineComponent({
       await menuController.close('settings-menu');
     };
     
-    // Export all localstorage data as JSON file
-    const exportAllData = () => {
-      // Collect all data from localStorage
-      const exportData = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        try {
-          exportData[key] = JSON.parse(localStorage.getItem(key));
-        } catch (e) {
-          exportData[key] = localStorage.getItem(key);
-        }
-      }
-      
-      // Create and download the JSON file
-      const dataStr = JSON.stringify(exportData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'app-data-export.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    };
-    
-    // Show confirmation before clearing data
-    const showClearDataConfirm = async () => {
-      const alert = await alertController.create({
-        header: 'Alle Daten löschen?',
-        message: 'Diese Aktion wird alle gespeicherten Daten unwiderruflich löschen. Die App wird auf den Ausgangszustand zurückgesetzt.',
-        buttons: [
-          {
-            text: 'Abbrechen',
-            role: 'cancel',
-          },
-          {
-            text: 'Löschen',
-            role: 'destructive',
-            handler: clearAllData,
-          },
-        ],
-      });
-
-      await alert.present();
-    };
-    
-    // Clear all data from localStorage
-    const clearAllData = () => {
-      localStorage.clear();
-      isFirstLaunch.value = true;
-      notificationsEnabled.value = false;
-      router.replace('/welcome');
-    };
-
     // Logout user
     const handleLogout = async () => {
       const alert = await alertController.create({
@@ -205,9 +135,24 @@ export default defineComponent({
 
     onMounted(async () => {
       // Set up authentication state observer
-      authService.onAuthChange((user) => {
+      authService.onAuthChange(async (user) => {
         currentUser.value = user;
         console.log('Auth state changed:', user ? user.email : 'No user');
+        
+        // If user logged in, run migration
+        if (user) {
+          try {
+            const { migrationService } = await import('@/services/migrationService');
+            const migrationCompleted = await migrationService.isMigrationCompleted();
+            if (!migrationCompleted) {
+              console.log('Running data migration...');
+              await migrationService.runAllMigrations();
+            }
+          } catch (error) {
+            console.error('Migration failed:', error);
+            // Continue app execution even if migration fails
+          }
+        }
         
         // If user logged out, redirect to login
         if (!user && router.currentRoute.value.meta.requiresAuth) {
@@ -218,12 +163,9 @@ export default defineComponent({
       // Initialize notification service when app starts
       await NotificationService.initialize();
       
-      // Check if this is the first launch
-      const firstLaunch = checkFirstLaunchStatus();
-      
-      // Redirect to welcome page if first launch and no user
-      if (firstLaunch && !authService.getCurrentUser()) {
-        router.replace('/welcome');
+      // Redirect to login if not authenticated
+      if (!authService.getCurrentUser() && router.currentRoute.value.path !== '/login' && router.currentRoute.value.path !== '/register') {
+        router.replace('/login');
       }
 
       // Load saved notification settings
@@ -247,14 +189,10 @@ export default defineComponent({
       isFirstLaunch,
       showNavigation,
       closeOutline,
-      downloadOutline,
-      trashOutline,
       logOutOutline,
       closeSettingsMenu,
       notificationsEnabled,
       saveSetting,
-      exportAllData,
-      showClearDataConfirm,
       handleLogout,
       currentUser
     };
@@ -294,10 +232,6 @@ ion-menu.ios ion-item {
   overflow: hidden;
 }
 
-.data-section {
-  margin-top: 30px;
-}
-
 .account-section {
   margin-top: 30px;
 }
@@ -309,7 +243,4 @@ ion-item-divider {
   font-size: 0.9rem;
 }
 
-.danger-item {
-  margin-bottom: 4px;
-}
 </style>

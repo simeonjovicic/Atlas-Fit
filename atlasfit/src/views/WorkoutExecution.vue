@@ -143,30 +143,8 @@
     removeCircle,
   } from 'ionicons/icons';
   import { useRouter } from 'vue-router';
-  
-  interface Set {
-    reps: number;
-    weight: number;
-    completed?: boolean;
-  }
-  
-  interface Exercise {
-    name: string;
-    type: string;
-    muscle: string;
-    equipment: string;
-    difficulty: string;
-    instructions: string;
-    sets: Set[];
-    restTime: number;
-  }
-  
-  interface Workout {
-    id: number;
-    name: string;
-    exercises: Exercise[];
-    lastPerformed?: string;
-  }
+  import { workoutService, type Workout, type Exercise, type Set } from '@/services/workoutService';
+  import { workoutHistoryService, type CompletedWorkout } from '@/services/workoutHistoryService';
   
   export default defineComponent({
     name: 'WorkoutExecution',
@@ -208,11 +186,9 @@
       });
   
       // Load workout data
-      const loadWorkout = () => {
-        const savedWorkouts = localStorage.getItem('workouts');
-        if (savedWorkouts) {
-          const workouts = JSON.parse(savedWorkouts);
-          const foundWorkout = workouts.find((w: Workout) => w.id === props.workoutId);
+      const loadWorkout = async () => {
+        try {
+          const foundWorkout = await workoutService.getWorkout(props.workoutId);
           if (foundWorkout) {
             workout.value = foundWorkout;
             // Initialize sets as not completed
@@ -222,6 +198,9 @@
               });
             });
           }
+        } catch (error) {
+          console.error('Failed to load workout from Firebase:', error);
+          // No fallback - only use Firebase for security
         }
       };
   
@@ -364,18 +343,11 @@
       };
   
       // Save workout progress
-      const saveWorkoutProgress = () => {
+      const saveWorkoutProgress = async () => {
         if (!workout.value) return;
         
-        const savedWorkouts = localStorage.getItem('workouts');
-        if (savedWorkouts) {
-          const workouts = JSON.parse(savedWorkouts);
-          const index = workouts.findIndex((w: Workout) => w.id === workout.value?.id);
-          if (index !== -1) {
-            workouts[index] = workout.value;
-            localStorage.setItem('workouts', JSON.stringify(workouts));
-          }
-        }
+        // Save to Firebase only - no localStorage
+        await workoutService.updateWorkout(workout.value.id, workout.value);
       };
   
       // Confirm exit workout
@@ -400,90 +372,81 @@
       };
   
       // End workout
-      // End workout
-const endWorkout = () => {
-  if (workout.value) {
-    // Calculate total workout duration
-    const endTime = new Date();
-    const duration = Math.floor((endTime.getTime() - startTime.value.getTime()) / 1000);
-    const durationFormatted = formatTime(duration);
-    
-    // Create a workout history entry
-    const completedWorkout = {
-      id: workout.value.id,
-      name: workout.value.name,
-      completedAt: endTime.toISOString(),
-      duration: durationFormatted,
-      exercises: workout.value.exercises.map((exercise, exerciseIndex) => {
-        // Count completed sets
-        const completedSetsCount = exercise.sets.filter((_, setIndex) => {
-          const key = `${exerciseIndex}-${setIndex}`;
-          return completedSets.value[key] === true;
-        }).length;
+      const endWorkout = async () => {
+        if (workout.value) {
+          // Calculate total workout duration
+          const endTime = new Date();
+          const duration = Math.floor((endTime.getTime() - startTime.value.getTime()) / 1000);
+          const durationFormatted = formatTime(duration);
+          
+          // Create a workout history entry
+          const completedWorkout: CompletedWorkout = {
+            id: workout.value.id,
+            name: workout.value.name,
+            completedAt: endTime.toISOString(),
+            duration: durationFormatted,
+            exercises: workout.value.exercises.map((exercise, exerciseIndex) => {
+              // Count completed sets
+              const completedSetsCount = exercise.sets.filter((_, setIndex) => {
+                const key = `${exerciseIndex}-${setIndex}`;
+                return completedSets.value[key] === true;
+              }).length;
+              
+              // Find best set (highest weight × reps)
+              let bestSet = '';
+              let bestSetValue = 0;
+              
+              exercise.sets.forEach(set => {
+                const setValue = set.weight * set.reps;
+                if (setValue > bestSetValue) {
+                  bestSetValue = setValue;
+                  bestSet = `${set.weight} kg × ${set.reps}`;
+                }
+              });
+              
+              return {
+                name: exercise.name,
+                completedSets: completedSetsCount,
+                sets: exercise.sets.map(set => ({
+                  reps: set.reps,
+                  weight: set.weight
+                })),
+                bestSet: bestSet
+              };
+            }),
+            totalWeight: workout.value.exercises.reduce((total, exercise) => {
+              return total + exercise.sets.reduce((setTotal, set) => {
+                return setTotal + (set.weight * set.reps);
+              }, 0);
+            }, 0)
+          };
+          
+          // Save to Firebase only - no localStorage
+          await workoutHistoryService.saveCompletedWorkout(completedWorkout);
+          
+          // Also update the regular workout data
+          workout.value.lastPerformed = endTime.toISOString();
+          await saveWorkoutProgress();
+          
+          // Show completion toast
+          toastController.create({
+            message: 'Workout completed! Great job! 💪',
+            duration: 1500,
+            position: 'top',
+            color: 'success'
+          }).then(toast => toast.present());
+          endWorkoutSound.play().catch((error) => {
+            console.error('Failed to play sound:', error);
+          });
+        }
         
-        // Find best set (highest weight × reps)
-        let bestSet = '';
-        let bestSetValue = 0;
-        
-        exercise.sets.forEach(set => {
-          const setValue = set.weight * set.reps;
-          if (setValue > bestSetValue) {
-            bestSetValue = setValue;
-            bestSet = `${set.weight} kg × ${set.reps}`;
-          }
-        });
-        
-        return {
-          name: exercise.name,
-          completedSets: completedSetsCount,
-          sets: exercise.sets.map(set => ({
-            reps: set.reps,
-            weight: set.weight
-          })),
-          bestSet: bestSet
-        };
-      }),
-      totalWeight: workout.value.exercises.reduce((total, exercise) => {
-        return total + exercise.sets.reduce((setTotal, set) => {
-          return setTotal + (set.weight * set.reps);
-        }, 0);
-      }, 0)
-    };
-    
-    // Save to localStorage
-    const savedCompletedWorkouts = localStorage.getItem('completedWorkouts');
-    let completedWorkouts = [];
-    
-    if (savedCompletedWorkouts) {
-      completedWorkouts = JSON.parse(savedCompletedWorkouts);
-    }
-    
-    completedWorkouts.push(completedWorkout);
-    localStorage.setItem('completedWorkouts', JSON.stringify(completedWorkouts));
-    
-    // Also update the regular workout data
-    workout.value.lastPerformed = endTime.toISOString();
-    saveWorkoutProgress();
-    
-    // Show completion toast
-    toastController.create({
-      message: 'Workout completed! Great job! 💪',
-      duration: 1500,
-      position: 'top',
-      color: 'success'
-    }).then(toast => toast.present());
-    endWorkoutSound.play().catch((error) => {
-  console.error('Failed to play sound:', error);
-});
-  }
-  
-  // Navigate back to workout list
-  router.push('/history');
-};
+        // Navigate back to workout list
+        router.push('/history');
+      };
   
       // Component lifecycle hooks
-      onMounted(() => {
-        loadWorkout();
+      onMounted(async () => {
+        await loadWorkout();
         startWorkoutTimer();
       });
   

@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import HomePage from '../views/HomePage.vue'
-import CreateWorkouts from '../views/CreateWorkouts.vue';
-import SearchWorkouts from '../views/SearchWorkouts.vue';
+import HomePage from '@/views/HomePage.vue';
+import CreateWorkouts from '@/views/CreateWorkouts.vue';
+import SearchWorkouts from '@/views/SearchWorkouts.vue';
 import WorkoutExecution from '@/views/WorkoutExecution.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import WorkoutHistory from '@/views/WorkoutHistory.vue';
-import WelcomePage from '@/views/WelcomePage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import { auth } from '@/services/firebase';
@@ -28,12 +27,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Register',
     component: RegisterPage,
     meta: { requiresGuest: true }
-  },
-  {
-    path: '/welcome',
-    name: 'Welcome',
-    component: WelcomePage,
-    meta: { public: true }
   },
   {
     path: '/home',
@@ -112,21 +105,6 @@ router.beforeEach(async (to, from, next) => {
   const requiresGuest = to.meta.requiresGuest;
   const isPublic = to.meta.public;
 
-  // Check if first launch
-  const isFirstLaunch = localStorage.getItem('firstLaunch') !== 'false';
-
-  // Public routes (like welcome) are always accessible
-  if (isPublic) {
-    next();
-    return;
-  }
-
-  // If first launch and not going to welcome, redirect to welcome
-  if (isFirstLaunch && to.path !== '/welcome' && !isAuthenticated) {
-    next('/welcome');
-    return;
-  }
-
   // If route requires authentication and user is not authenticated
   if (requiresAuth && !isAuthenticated) {
     next('/login');
@@ -134,7 +112,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // If route requires guest (login/register) and user is authenticated
-  if (requiresGuest && isAuthenticated && to.path !== '/welcome') {
+  if (requiresGuest && isAuthenticated) {
     next('/home');
     return;
   }

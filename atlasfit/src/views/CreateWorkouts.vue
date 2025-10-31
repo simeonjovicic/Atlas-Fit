@@ -112,7 +112,7 @@
           <!-- Single Rest Timer for the entire exercise -->
           <div class="rest-timer-container">
             <div class="rest-timer-label">Rest between sets:</div>
-            <ion-range v-model="exercise.restTime" min="0" max="300" step="5" class="rest-slider">
+            <ion-range v-model="exercise.restTime" :min="0" :max="300" :step="5" class="rest-slider">
               <div slot="start">0:00</div>
               <div class="timer-display" slot="end">{{ formatTime(exercise.restTime) }}</div>
             </ion-range>
@@ -240,7 +240,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue';
+import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/services/firebase';
 import { useRouter } from 'vue-router';
 import {
   IonPage,
@@ -285,30 +287,7 @@ import {
 } from 'ionicons/icons';
 
 import exercisesData from '@/resources/exercises.json';
-
-interface Set {
-  reps: number;
-  weight: number;
-  locked?: boolean;
-}
-
-interface Exercise {
-  name: string;
-  type: string;
-  muscle: string;
-  equipment: string;
-  difficulty: string;
-  instructions: string;
-  sets: Set[];
-  restTime: number;
-}
-
-interface Workout {
-  id: number;
-  name: string;
-  exercises: Exercise[];
-  lastPerformed?: string;
-}
+import { workoutService, type Workout, type Exercise, type Set } from '@/services/workoutService';
 
 export default defineComponent({
   name: 'CreateWorkouts',
@@ -352,7 +331,7 @@ export default defineComponent({
     const selectedWorkout = ref<Workout | null>(null);
     const exerciseSearchTerm = ref('');
     let nextWorkoutId = 1;
-    const editingWorkoutId = ref(null);
+    const editingWorkoutId = ref<number | null>(null);
     const router = useRouter();
 
     // Share workout
@@ -427,20 +406,33 @@ const shareWorkout = async () => {
       return newWorkoutName.value.trim() !== '' && selectedExercises.value.length > 0;
     });
 
-    // Load workouts from localStorage
-    const loadWorkouts = () => {
-      const savedWorkouts = localStorage.getItem('workouts');
-      if (savedWorkouts) {
-        workouts.value = JSON.parse(savedWorkouts);
+    // Load workouts from Firebase
+    const loadWorkouts = async () => {
+      try {
+        const savedWorkouts = await workoutService.getWorkouts();
+        workouts.value = savedWorkouts;
         nextWorkoutId = workouts.value.length > 0 
           ? Math.max(...workouts.value.map((w) => w.id)) + 1 
           : 1;
+      } catch (error) {
+        console.error('Failed to load workouts:', error);
+        // No fallback - only use Firebase for security
+        workouts.value = [];
+        nextWorkoutId = 1;
       }
     };
 
-    // Save workouts to localStorage
-    const saveWorkouts = () => {
-      localStorage.setItem('workouts', JSON.stringify(workouts.value));
+    // Save workouts to Firebase
+    const saveWorkouts = async () => {
+      try {
+        // Save all workouts to Firebase
+        for (const workout of workouts.value) {
+          await workoutService.saveWorkout(workout);
+        }
+      } catch (error) {
+        console.error('Failed to save workouts:', error);
+        throw error; // Re-throw to let caller handle
+      }
     };
 
     // Format time for rest period display
@@ -569,21 +561,21 @@ const shareWorkout = async () => {
     // Duplicate workout
     const duplicateWorkout = async () => {
       if (selectedWorkout.value) {
-        const newWorkout = {
+        const newWorkout: Workout = {
           id: nextWorkoutId++,
           name: `${selectedWorkout.value.name} (Copy)`,
           exercises: JSON.parse(JSON.stringify(selectedWorkout.value.exercises)),
         };
         
         // Ensure each exercise has the restTime property
-        newWorkout.exercises.forEach(exercise => {
+        newWorkout.exercises.forEach((exercise: Exercise) => {
           if (exercise.restTime === undefined) {
             exercise.restTime = 60; // Default to 60 seconds if not set
           }
         });
         
         workouts.value.push(newWorkout);
-        saveWorkouts();
+        await saveWorkouts();
         closeWorkoutOptionsPopover();
         
         const toast = await toastController.create({
@@ -610,10 +602,18 @@ const shareWorkout = async () => {
             {
               text: 'Delete',
               role: 'destructive',
-              handler: () => {
-                workouts.value = workouts.value.filter((w) => w.id !== selectedWorkout.value!.id);
-                saveWorkouts();
-                closeWorkoutOptionsPopover();
+              handler: async () => {
+                try {
+                  await workoutService.deleteWorkout(selectedWorkout.value!.id);
+                  workouts.value = workouts.value.filter((w) => w.id !== selectedWorkout.value!.id);
+                  closeWorkoutOptionsPopover();
+                } catch (error) {
+                  console.error('Failed to delete workout:', error);
+                  // Still remove from local array for UI, but show error
+                  workouts.value = workouts.value.filter((w) => w.id !== selectedWorkout.value!.id);
+                  closeWorkoutOptionsPopover();
+                  throw error; // Re-throw to show error to user
+                }
               }
             }
           ]
@@ -636,7 +636,7 @@ const shareWorkout = async () => {
           // Update existing workout
           workouts.value = workouts.value.filter(w => w.id !== editingWorkoutId.value);
           
-          const updatedWorkout = {
+          const updatedWorkout: Workout = {
             id: editingWorkoutId.value,
             name: newWorkoutName.value,
             exercises: selectedExercises.value,
@@ -644,17 +644,22 @@ const shareWorkout = async () => {
           
           workouts.value.push(updatedWorkout);
           editingWorkoutId.value = null; // Reset the editing ID
+          
+          // Save to Firebase
+          await workoutService.saveWorkout(updatedWorkout);
         } else {
           // Create new workout
-          const newWorkout = {
+          const newWorkout: Workout = {
             id: nextWorkoutId++,
             name: newWorkoutName.value,
             exercises: selectedExercises.value,
           };
           workouts.value.push(newWorkout);
+          
+          // Save to Firebase
+          await workoutService.saveWorkout(newWorkout);
         }
         
-        saveWorkouts();
         closeWorkoutCreationModal();
         
         const toast = await toastController.create({
@@ -667,7 +672,7 @@ const shareWorkout = async () => {
       }
     };
 
-    const startWorkout = (workout: Workout) => {
+    const startWorkout = async (workout: Workout) => {
       closeWorkoutDetailsModal();
       // Update last performed date
       const updatedWorkout = {
@@ -679,7 +684,12 @@ const shareWorkout = async () => {
       const index = workouts.value.findIndex(w => w.id === workout.id);
       if (index !== -1) {
         workouts.value[index] = updatedWorkout;
-        saveWorkouts();
+        try {
+          await workoutService.updateWorkout(workout.id, { lastPerformed: updatedWorkout.lastPerformed });
+        } catch (error) {
+          console.error('Failed to update workout:', error);
+          // Error is logged, but continue navigation
+        }
       }
 
       // Navigate to the workout execution page
@@ -689,9 +699,28 @@ const shareWorkout = async () => {
       });
     };
 
+    // Watch for auth changes to reload data when user switches
+    let unsubscribeAuth: (() => void) | null = null;
+    
     // Load workouts when the component mounts
-    onMounted(() => {
-      loadWorkouts();
+    onMounted(async () => {
+      // Wait for auth to be ready
+      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          await loadWorkouts();
+        } else {
+          // Clear data when logged out
+          workouts.value = [];
+          nextWorkoutId = 1;
+        }
+      });
+    });
+    
+    // Cleanup auth watcher
+    onUnmounted(() => {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
     });
 
     return {

@@ -173,16 +173,18 @@ export class NotificationService {
       weekEnd.setDate(weekStart.getDate() + 6); // Sunday
       weekEnd.setHours(23, 59, 59, 999);
       
-      // Count workouts in this week
-      const completedWorkoutsStr = localStorage.getItem('completedWorkouts');
+      // Count workouts in this week from Firebase
       let workoutsCompleted = 0;
-      
-      if (completedWorkoutsStr) {
-        const completedWorkouts = JSON.parse(completedWorkoutsStr);
+      try {
+        const { workoutHistoryService } = await import('@/services/workoutHistoryService');
+        const completedWorkouts = await workoutHistoryService.getCompletedWorkouts();
         workoutsCompleted = completedWorkouts.filter((workout: any) => {
           const workoutDate = new Date(workout.completedAt);
           return workoutDate >= weekStart && workoutDate <= weekEnd;
         }).length;
+      } catch (error) {
+        console.error('Failed to load workouts for notification:', error);
+        // No fallback - just use 0
       }
       
       // Calculate remaining workouts

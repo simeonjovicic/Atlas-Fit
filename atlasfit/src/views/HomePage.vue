@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch, onActivated } from 'vue';
+import { defineComponent, ref, computed, onMounted, watch, onActivated, onUnmounted } from 'vue';
 import exercises from '@/resources/exercises.json';
 import { 
   IonPage, 
@@ -160,27 +160,11 @@ import {
   timeOutline, 
   barbellOutline
 } from 'ionicons/icons';
-
-interface CompletedSet {
-  reps: number;
-  weight: number;
-}
-
-interface CompletedExercise {
-  name: string;
-  completedSets: number;
-  sets: CompletedSet[];
-  bestSet: string;
-}
-
-interface CompletedWorkout {
-  id: number;
-  name: string;
-  completedAt: string;
-  duration: string;
-  exercises: CompletedExercise[];
-  totalWeight: number;
-}
+import { workoutHistoryService, type CompletedWorkout } from '@/services/workoutHistoryService';
+import { userSettingsService } from '@/services/userSettingsService';
+import { profileService } from '@/services/profileService';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/services/firebase';
 
 interface WeekData {
   startDate: Date;
@@ -213,7 +197,7 @@ export default defineComponent({
     const currentStreak = ref(0);
     const bestStreak = ref(0);
 
-    const calculateStreaks = () => {
+    const calculateStreaks = async () => {
   if (completedWorkouts.value.length === 0) {
     currentStreak.value = 0;
     bestStreak.value = 0;
@@ -244,25 +228,32 @@ export default defineComponent({
   // Calculate current streak
   let streak = hasWorkoutToday ? 1 : 0; // Start with 1 if workout today
   
-  // If no workout today, we need to check if there was one yesterday to continue streak
-  if (!hasWorkoutToday) {
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayFormatted = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-    
-    if (uniqueDates[0] !== yesterdayFormatted) {
-      // No workout yesterday, streak is 0
-      currentStreak.value = 0;
+    // If no workout today, we need to check if there was one yesterday to continue streak
+    if (!hasWorkoutToday) {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayFormatted = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
       
-      // Check stored best streak
-      const savedBestStreak = localStorage.getItem('bestStreak');
-      bestStreak.value = savedBestStreak ? parseInt(savedBestStreak) : 0;
-      return;
+      if (uniqueDates[0] !== yesterdayFormatted) {
+        // No workout yesterday, streak is 0
+        currentStreak.value = 0;
+        
+        // Check stored best streak from Firebase
+        try {
+          const settings = await userSettingsService.getSettings();
+          bestStreak.value = settings?.bestStreak || 0;
+        } catch (error) {
+          console.error('Failed to load best streak:', error);
+          // Fallback to localStorage
+          const savedBestStreak = localStorage.getItem('bestStreak');
+          bestStreak.value = savedBestStreak ? parseInt(savedBestStreak) : 0;
+        }
+        return;
+      }
+      
+      // There was a workout yesterday, start streak at 1
+      streak = 1;
     }
-    
-    // There was a workout yesterday, start streak at 1
-    streak = 1;
-  }
   
   // Start index depends on whether we had a workout today
   let startIndex = hasWorkoutToday ? 1 : 0;
@@ -287,66 +278,105 @@ export default defineComponent({
   currentStreak.value = streak;
   
   // Update best streak
-  const savedBestStreak = localStorage.getItem('bestStreak');
-  const previousBest = savedBestStreak ? parseInt(savedBestStreak) : 0;
+  const settings = await userSettingsService.getSettings();
+  const previousBest = settings?.bestStreak || 0;
   bestStreak.value = Math.max(previousBest, streak);
   
   // Save best streak if it improved
   if (bestStreak.value > previousBest) {
+    await userSettingsService.updateSetting('bestStreak', bestStreak.value);
+    // Also update localStorage as backup
     localStorage.setItem('bestStreak', bestStreak.value.toString());
+  }
+  
+  // Fallback: use localStorage if Firebase fails
+  if (!settings) {
+    const savedBestStreak = localStorage.getItem('bestStreak');
+    bestStreak.value = savedBestStreak ? parseInt(savedBestStreak) : streak;
   }
 };
 
-    // Fetch the user's name from localStorage
-    const fetchUserName = () => {
-      const savedProfile = localStorage.getItem('profile');
-      if (savedProfile) {
-        const profile = JSON.parse(savedProfile);
-        userName.value = profile.name || 'User';
-        workoutsPerWeekTarget.value = profile.workoutsPerWeek || 0;
+    // Fetch the user's name from Firebase
+    const fetchUserName = async () => {
+      try {
+        const profile = await profileService.getProfile();
+        if (profile) {
+          userName.value = profile.name || 'User';
+          workoutsPerWeekTarget.value = profile.workoutsPerWeek || 0;
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        // Fallback to localStorage
+        const savedProfile = localStorage.getItem('profile');
+        if (savedProfile) {
+          const profile = JSON.parse(savedProfile);
+          userName.value = profile.name || 'User';
+          workoutsPerWeekTarget.value = profile.workoutsPerWeek || 0;
+        }
       }
     };
 
-    const generateWeeklyChallenge = () => {
-  // Get current date and create a week identifier
-  const now = new Date();
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
-  weekStart.setHours(0, 0, 0, 0);
-  
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
-  weekEnd.setHours(23, 59, 59, 999);
-  
-  const weekIdentifier = `week-${weekStart.getFullYear()}-${weekStart.getMonth() + 1}-${weekStart.getDate()}`;
-  
-  // Calculate days until reset
-  const timeDiff = weekEnd.getTime() - now.getTime();
-  daysUntilReset.value = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  
-  // Check if we already have a challenge for this week
-  const savedChallenge = localStorage.getItem(`weeklyChallenge-${weekIdentifier}`);
-  
-  if (savedChallenge) {
-    // Use existing challenge
-    challenge.value = JSON.parse(savedChallenge);
-  } else {
-    if (!exercises || !exercises.length) {
-      console.error('No exercises available in exercises.json');
-      return;
-    }
-    
-    // Generate new challenge
-    const randomIndex = Math.floor(Math.random() * exercises.length);
-    challenge.value = exercises[randomIndex];
-    
-    // Save this challenge
-    localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
-  }
-  
-  // Check if challenge is completed
-  checkChallengeCompletion(weekStart, weekEnd);
-};
+    const generateWeeklyChallenge = async () => {
+      // Get current date and create a week identifier
+      const now = new Date();
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1)); // Start of week (Monday)
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6); // End of week (Sunday)
+      weekEnd.setHours(23, 59, 59, 999);
+      
+      const weekIdentifier = `week-${weekStart.getFullYear()}-${weekStart.getMonth() + 1}-${weekStart.getDate()}`;
+      
+      // Calculate days until reset
+      const timeDiff = weekEnd.getTime() - now.getTime();
+      daysUntilReset.value = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
+      try {
+        // Check if we already have a challenge for this week from Firebase
+        const savedChallenge = await userSettingsService.getWeeklyChallenge(weekIdentifier);
+        
+        if (savedChallenge) {
+          // Use existing challenge
+          challenge.value = savedChallenge;
+        } else {
+          if (!exercises || !exercises.length) {
+            console.error('No exercises available in exercises.json');
+            return;
+          }
+          
+          // Generate new challenge
+          const randomIndex = Math.floor(Math.random() * exercises.length);
+          challenge.value = exercises[randomIndex];
+          
+          // Save this challenge to Firebase
+          await userSettingsService.saveWeeklyChallenge(weekIdentifier, challenge.value);
+          // Also save to localStorage as backup
+          localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
+        }
+      } catch (error) {
+        console.error('Failed to load weekly challenge:', error);
+        // Fallback to localStorage
+        const savedChallenge = localStorage.getItem(`weeklyChallenge-${weekIdentifier}`);
+        
+        if (savedChallenge) {
+          challenge.value = JSON.parse(savedChallenge);
+        } else {
+          if (!exercises || !exercises.length) {
+            console.error('No exercises available in exercises.json');
+            return;
+          }
+          
+          const randomIndex = Math.floor(Math.random() * exercises.length);
+          challenge.value = exercises[randomIndex];
+          localStorage.setItem(`weeklyChallenge-${weekIdentifier}`, JSON.stringify(challenge.value));
+        }
+      }
+      
+      // Check if challenge is completed
+      checkChallengeCompletion(weekStart, weekEnd);
+    };
 
 // Add function to check if challenge is completed
 const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
@@ -371,41 +401,37 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
   }
 };
 
-    const loadCompletedWorkouts = () => {
-  isLoading.value = true;
-  try {
-    const savedWorkouts = localStorage.getItem('completedWorkouts');
-    console.log('Retrieved workouts:', savedWorkouts);
-    if (savedWorkouts) {
-      completedWorkouts.value = JSON.parse(savedWorkouts);
-      calculateStreaks(); // Calculate streaks after loading workouts
-    } else {
-      completedWorkouts.value = [];
-      calculateStreaks(); // Set streaks to 0
-    }
-  } catch (error) {
-    console.error('Failed to load workouts:', error);
-    completedWorkouts.value = [];
-    calculateStreaks(); // Set streaks to 0
-  } finally {
-    isLoading.value = false;
-  }
-};
+    const loadCompletedWorkouts = async () => {
+      isLoading.value = true;
+      try {
+        const savedWorkouts = await workoutHistoryService.getCompletedWorkouts();
+        console.log('Loaded workouts from Firebase:', savedWorkouts.length);
+        completedWorkouts.value = savedWorkouts;
+        await calculateStreaks(); // Calculate streaks after loading workouts
+      } catch (error) {
+        console.error('Failed to load workouts from Firebase:', error);
+        // No fallback - only use Firebase for security
+        completedWorkouts.value = [];
+        await calculateStreaks(); // Set streaks to 0
+      } finally {
+        isLoading.value = false;
+      }
+    };
 
-   const refreshHistory = (event: CustomEvent) => {
-  try {
-    loadCompletedWorkouts(); // This now includes calculateStreaks()
-  } catch (error) {
-    console.error('Failed to refresh data:', error);
-  } finally {
-    // Always complete the refresher, even if there's an error
-    if (event && event.target) {
-      setTimeout(() => {
-        event.target.complete();
-      }, 500); // Simulate a delay for better UX
-    }
-  }
-};
+   const refreshHistory = async (event: CustomEvent) => {
+      try {
+        await loadCompletedWorkouts(); // This now includes calculateStreaks()
+      } catch (error) {
+        console.error('Failed to refresh data:', error);
+      } finally {
+        // Always complete the refresher, even if there's an error
+        if (event && event.target) {
+          setTimeout(() => {
+            event.target.complete();
+          }, 500); // Simulate a delay for better UX
+        }
+      }
+    };
     
     const totalWorkouts = computed(() => {
       return completedWorkouts.value.length;
@@ -546,20 +572,46 @@ const checkChallengeCompletion = (weekStart: Date, weekEnd: Date) => {
       });
     };
     
-    onMounted(() => {
+    // Watch for auth changes to reload data when user switches
+    let unsubscribeAuth: (() => void) | null = null;
+    
+    onMounted(async () => {
       checkAndRefreshWeeks();
       // Fetch the user's name when the component is mounted
-      fetchUserName();
-      loadCompletedWorkouts();
-      generateWeeklyChallenge();
+      await fetchUserName();
+      await loadCompletedWorkouts();
+      await generateWeeklyChallenge();
+      
+      // Watch for auth changes
+      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // Reload all data when user changes
+          await fetchUserName();
+          await loadCompletedWorkouts();
+          await generateWeeklyChallenge();
+        } else {
+          // Clear data when logged out
+          completedWorkouts.value = [];
+          userName.value = '';
+          currentStreak.value = 0;
+          bestStreak.value = 0;
+        }
+      });
     });
 
-    onActivated(() => {
+    onActivated(async () => {
        checkAndRefreshWeeks();
       // Fetch the user's name when the component is activated
-      fetchUserName();
-      loadCompletedWorkouts();
-      generateWeeklyChallenge();
+      await fetchUserName();
+      await loadCompletedWorkouts();
+      await generateWeeklyChallenge();
+    });
+    
+    // Cleanup auth watcher
+    onUnmounted(() => {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
     });
 
     watch(completedWorkouts, () => {

@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import {
   IonPage,
   IonHeader,
@@ -156,6 +156,9 @@ import {
   IonSegmentButton,
 } from "@ionic/vue";
 import exercisesData from "@/resources/exercises.json";
+import { savedExercisesService } from "@/services/savedExercisesService";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/services/firebase";
 
 import { 
   arrowBackOutline, 
@@ -235,21 +238,30 @@ export default {
       isOpen.value = false;
     };
 
-    const toggleBookmark = (exercise) => {
+    const toggleBookmark = async (exercise) => {
       if (!exercise) return;
 
-      // Toggle the saved state
-      exercise.saved = !exercise.saved;
+      try {
+        // Toggle the saved state
+        exercise.saved = !exercise.saved;
 
-      // Find the exercise in the original data and update it
-      const index = exercises.value.findIndex(e => e.name === exercise.name);
-      if (index !== -1) {
-        exercises.value[index].saved = exercise.saved;
+        // Find the exercise in the original data and update it
+        const index = exercises.value.findIndex(e => e.name === exercise.name);
+        if (index !== -1) {
+          exercises.value[index].saved = exercise.saved;
+        }
+
+        // Save to Firebase
+        await savedExercisesService.toggleSavedExercise(exercise.name, exercise.saved);
+      } catch (error) {
+        console.error('Failed to toggle bookmark:', error);
+        // Revert on error
+        exercise.saved = !exercise.saved;
+        const index = exercises.value.findIndex(e => e.name === exercise.name);
+        if (index !== -1) {
+          exercises.value[index].saved = exercise.saved;
+        }
       }
-
-      // Here you would typically save the updated state to localStorage or a database
-      // For example:
-      localStorage.setItem('savedExercises', JSON.stringify(exercises.value));
     };
 
     const filterExercises = () => {
@@ -257,15 +269,49 @@ export default {
       // The filtering logic is handled by the computed property
     };
 
-    // Optional: Load saved state from localStorage on component creation
-    const loadSavedState = () => {
-      const savedData = localStorage.getItem('savedExercises');
-      if (savedData) {
-        exercises.value = JSON.parse(savedData);
+    // Load saved state from Firebase
+    const loadSavedState = async () => {
+      try {
+        const savedExerciseNames = await savedExercisesService.getSavedExercises();
+        
+        // Update exercises array with saved status from Firebase
+        exercises.value = exercises.value.map(exercise => ({
+          ...exercise,
+          saved: savedExerciseNames.has(exercise.name)
+        }));
+      } catch (error) {
+        console.error('Failed to load saved exercises:', error);
+        // Keep default state (all unsaved)
       }
-     };
-     
-    loadSavedState();
+    };
+
+    // Watch for auth changes to reload data when user switches
+    let unsubscribeAuth = null;
+    
+    onMounted(async () => {
+      await loadSavedState();
+      
+      // Watch for auth changes
+      unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // Reload saved exercises when user changes
+          await loadSavedState();
+        } else {
+          // Clear saved status when logged out
+          exercises.value = exercises.value.map(exercise => ({
+            ...exercise,
+            saved: false
+          }));
+        }
+      });
+    });
+
+    // Cleanup auth watcher
+    onUnmounted(() => {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
+    });
 
     return { 
       searchQuery, 

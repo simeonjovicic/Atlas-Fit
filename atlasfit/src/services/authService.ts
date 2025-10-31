@@ -34,9 +34,32 @@ export const authService = {
   },
 
   /**
-   * Logout current user
+   * Logout current user and clear user-specific localStorage data
    */
-  logout: (): Promise<void> => {
+  logout: async (): Promise<void> => {
+    // Clear user-specific data from localStorage before logout
+    // This prevents data leakage between users
+    const keysToRemove = [
+      'workouts',
+      'completedWorkouts',
+      'profile',
+      'profilePhoto',
+      'profileHistory',
+      'bestStreak',
+      'savedExercises'
+    ];
+    
+    // Remove weekly challenge keys
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('weeklyChallenge-')) {
+        localStorage.removeItem(key);
+      }
+    }
+    
+    // Remove other user-specific keys
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
     return signOut(auth);
   },
 
